@@ -245,6 +245,9 @@
     .c-outer {
       position: absolute;
       transform-style: preserve-3d;
+      padding: 8%;
+      box-sizing: content-box;
+      margin: -8%;
     }
 
     .c-scale {
@@ -267,12 +270,7 @@
       overflow: hidden;
       position: relative;
       cursor: pointer;
-      box-shadow:
-        0 2px 0px 0px rgba(0,0,0,0.18),
-        0 4px 0px 0px rgba(0,0,0,0.09),
-        0 8px 24px rgba(0,0,0,0.13),
-        0 24px 48px rgba(0,0,0,0.10),
-        inset 0 1px 0 rgba(255,255,255,0.55);
+      box-shadow: none;
       border: 1px solid rgba(0,0,0,0.08);
       transform-style: flat;
     }
@@ -307,12 +305,35 @@
 
     .c-glow {
       position: absolute;
-      inset: -30px;
-      border-radius: 32px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -45%);
+      width: 110%;
+      height: 110%;
+      border-radius: 50%;
       opacity: 0;
       pointer-events: none;
       z-index: -1;
-      filter: blur(48px);
+      filter: blur(24px);
+    }
+
+    .c-shadow {
+      position: absolute;
+      bottom: -72px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110%;
+      height: 18px;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(0,0,0,0.28) 0%,
+        rgba(0,0,0,0.10) 45%,
+        rgba(0,0,0,0) 75%
+      );
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(4px);
     }
 
     .c-label {
@@ -557,39 +578,20 @@
       opacity: 0.65;
     }
 
-    /* ─── PROJECT NAV BUTTONS ─── */
-    .proj-nav {
+    /* ─── CAROUSEL HINT ─── */
+    .carousel-hint {
       position: absolute;
       bottom: 10vh;
       left: 50%;
       transform: translateX(-50%);
-      display: flex;
-      flex-direction: row;
-      gap: 14px;
+      color: #999999;
+      pointer-events: none;
       z-index: 20;
+      display: flex;
       align-items: center;
       justify-content: center;
-      perspective: 600px;
+      opacity: 0;
     }
-
-    .proj-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
-      font-family: var(--font-ui);
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #3a3a38;
-      cursor: pointer;
-      border: 1px solid rgba(0,0,0,0.10);
-      outline: none;
-      letter-spacing: 0.02em;
-      position: relative;
-      background: linear-gradient(145deg, #f2f0ec 0%, #e2dfd8 100%);
-      box-shadow: none;
-    }
-
-    .proj-btn:hover { filter: brightness(1.04); }
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 600px) {
@@ -723,12 +725,17 @@
     <div class="carousel-ring" id="carouselRing"></div>
   </div>
 
-  <div class="proj-nav" id="projNav">
-    <button class="proj-btn" data-index="0" aria-label="Go to project 1">1</button>
-    <button class="proj-btn" data-index="1" aria-label="Go to project 2">2</button>
-    <button class="proj-btn" data-index="2" aria-label="Go to project 3">3</button>
-    <button class="proj-btn" data-index="3" aria-label="Go to project 4">4</button>
-    <button class="proj-btn" data-index="4" aria-label="Go to project 5">5</button>
+  <div class="carousel-hint" id="carouselHint">
+    <svg width="64" height="64" viewBox="0 0 32 32" fill="none"
+         aria-hidden="true">
+      <path d="M12 16 L6 16 M6 16 L10 12 M6 16 L10 20"
+            stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20 16 L26 16 M26 16 L22 12 M26 16 L22 20"
+            stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="16" cy="16" r="1.5" fill="currentColor"/>
+    </svg>
   </div>
 </section>
 
@@ -865,7 +872,12 @@ function buildCarousel() {
 
     const glow = document.createElement('div');
     glow.className = 'c-glow';
+    glow.style.opacity = '0';
     outer.insertBefore(glow, outer.firstChild);
+
+    const shadow = document.createElement('div');
+    shadow.className = 'c-shadow';
+    outer.appendChild(shadow);
 
     const scale = document.createElement('div');
     scale.className = 'c-scale';
@@ -928,9 +940,6 @@ function buildCarousel() {
       }
     });
 
-    if (!prefersReducedMotion && !isTouchDevice) {
-      initParallax(card, tilt, shine, pState[i]);
-    }
   });
 
   resizeCards();
@@ -971,17 +980,61 @@ function updateRing() {
     const scale      = 0.78 + depth * 0.22;
     const zi         = Math.round((cos + 1) * 50);
 
-    // Floor cast shadow: front card full opacity, sides at ~55%
-    const shadowMult = 0.55 + depth * 0.45;
-    const sh1 = (0.13 * shadowMult).toFixed(3);
-    const sh2 = (0.10 * shadowMult).toFixed(3);
-
     outer.style.transform = `rotateY(${ca}deg) translateZ(${r}px)`;
     outer.style.zIndex    = zi;
     const scaleEl = outer.querySelector('.c-scale');
-    scaleEl.style.transform = `scale(${scale})`;
-    scaleEl.style.filter    =
-      `brightness(${brightness}) drop-shadow(0 32px 24px rgba(0,0,0,${sh1})) drop-shadow(0 12px 8px rgba(0,0,0,${sh2}))`;
+    const isFront = depth > 0.95;
+
+    const sat = isFront ? 1.0 : 0.45;
+    scaleEl.style.filter = `brightness(${brightness}) saturate(${sat})`;
+
+    if (view === 'hub') {
+
+      const shadowEl = outer.querySelector('.c-shadow');
+      if (shadowEl) {
+        gsap.to(shadowEl, {
+          opacity: isFront ? 1 : 0,
+          duration: 0.5,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      }
+      const glowEl  = outer.querySelector('.c-glow');
+      const tiltEl  = outer.querySelector('.c-tilt');
+      const shineEl = outer.querySelector('.c-shine');
+      const s       = pState[i];
+
+      if (isFront) {
+        gsap.to(scaleEl, { scale: 1.06, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
+        gsap.to(s, {
+          tx: 6, ty: 0, duration: 0.35, ease: 'power2.out', overwrite: 'auto',
+          onUpdate: () => { tiltEl.style.transform = `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`; }
+        });
+        shineEl.style.background =
+          'radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.13) 0%, transparent 65%)';
+        gsap.to(shineEl, { opacity: 1, duration: 0.35, overwrite: 'auto' });
+        if (!s.glowColor) {
+          const img = outer.querySelector('img');
+          if (img && img.complete) s.glowColor = sampleImageColor(img);
+        }
+        if (glowEl && s.glowColor) {
+          glowEl.style.background = s.glowColor;
+          gsap.to(glowEl, { opacity: 0.85, duration: 1.8, ease: 'power2.out', overwrite: 'auto' });
+        }
+      } else {
+        gsap.to(scaleEl, { scale, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        gsap.to(s, {
+          tx: 0, ty: 0, duration: 0.3, ease: 'power2.out', overwrite: 'auto',
+          onUpdate: () => { tiltEl.style.transform = `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`; }
+        });
+        gsap.to(shineEl, { opacity: 0, duration: 0.3, overwrite: 'auto' });
+        if (glowEl) {
+          gsap.killTweensOf(glowEl);
+          gsap.to(glowEl, { opacity: 0, duration: 0.3, overwrite: 'auto' });
+        }
+      }
+    }
+
   });
 }
 
@@ -989,6 +1042,9 @@ function updateRing() {
 // SNAP
 // ────────────────────────────────────────────────────────────
 function snapToNearest() {
+  document.querySelectorAll('.c-glow').forEach(g => {
+    gsap.to(g, { opacity: 0, duration: 0.2 });
+  });
   if (isTransitioning) return;
   if (snapTween) snapTween.kill();
   const nearest = Math.round(angle / CARD_STEP) * CARD_STEP;
@@ -1002,6 +1058,9 @@ function snapToNearest() {
 }
 
 function snapToIndex(idx) {
+  document.querySelectorAll('.c-glow').forEach(g => {
+    gsap.to(g, { opacity: 0, duration: 0.2 });
+  });
   if (snapTween) snapTween.kill();
   const target = idx * CARD_STEP;
   const diff   = ((target - angle) % 360 + 540) % 360 - 180;
@@ -1022,6 +1081,9 @@ let dragStartX = 0;
 let dragMoved  = false;
 
 carouselWrap.addEventListener('mousedown', (e) => {
+  document.querySelectorAll('.c-glow').forEach(g => {
+    gsap.to(g, { opacity: 0, duration: 0.15 });
+  });
   if (view !== 'hub') return;
   if (snapTween) snapTween.kill();
   cancelAnimationFrame(coastingRaf);
@@ -1057,6 +1119,9 @@ window.addEventListener('mouseup', () => {
 // COASTING INERTIA
 // ────────────────────────────────────────────────────────────
 function startCoast() {
+  document.querySelectorAll('.c-glow').forEach(g => {
+    gsap.to(g, { opacity: 0, duration: 0.2 });
+  });
   if (prefersReducedMotion || Math.abs(velocity) < 0.3) {
     snapToNearest();
     return;
@@ -1302,7 +1367,7 @@ function triggerToHub_fromEntry() {
         duration: 1.375,
         ease: 'expo.out',
         onUpdate() { angle = proxy.v; updateRing(); },
-        onComplete() { isTransitioning = false; },
+        onComplete() { isTransitioning = false; showCarouselHint(); },
       });
     },
   });
@@ -1310,6 +1375,7 @@ function triggerToHub_fromEntry() {
 
 function triggerToEntry_fromHub() {
   if (view !== 'hub') return;
+  outers.forEach(o => { o.style.pointerEvents = 'none'; });
   isTransitioning = true;
   if (snapTween) snapTween.kill();
 
@@ -1394,63 +1460,7 @@ function triggerToEntry_fromInfo() {
 // ────────────────────────────────────────────────────────────
 // APPLE TV PARALLAX
 // ────────────────────────────────────────────────────────────
-function initParallax(card, tiltEl, shineEl, s) {
-  const scaleEl = card.closest('.c-outer').querySelector('.c-scale');
-
-  card.addEventListener('mouseenter', () => {
-    gsap.to(s, {
-      tx: 6, ty: 0,
-      duration: 0.35,
-      ease: 'power2.out',
-      onUpdate: () => {
-        tiltEl.style.transform =
-          `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`;
-      }
-    });
-    gsap.to(scaleEl, {
-      scale: 1.06,
-      duration: 0.35,
-      ease: 'power2.out'
-    });
-
-    shineEl.style.background =
-      'radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.13) 0%, transparent 65%)';
-    gsap.to(shineEl, { opacity: 1, duration: 0.35 });
-
-    if (!s.glowColor) {
-      const img = card.querySelector('img');
-      if (img && img.complete) s.glowColor = sampleImageColor(img);
-      else if (img) img.addEventListener('load', () => {
-        s.glowColor = sampleImageColor(img);
-      }, { once: true });
-    }
-    const glowEl = card.closest('.c-outer').querySelector('.c-glow');
-    if (glowEl) {
-      if (s.glowColor) glowEl.style.background = s.glowColor;
-      gsap.to(glowEl, { opacity: 0.28, duration: 0.5 });
-    }
-  });
-
-  card.addEventListener('mouseleave', () => {
-    gsap.to(s, {
-      tx: 0, ty: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-      onUpdate: () => {
-        tiltEl.style.transform =
-          `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`;
-      }
-    });
-    gsap.to(scaleEl, {
-      scale: 1.0,
-      duration: 0.45,
-      ease: 'power2.out'
-    });
-    gsap.to(shineEl, { opacity: 0, duration: 0.4 });
-    const glowEl = card.closest('.c-outer').querySelector('.c-glow');
-    if (glowEl) gsap.to(glowEl, { opacity: 0, duration: 0.5 });
-  });
-}
+function initParallax() {}
 
 function sampleImageColor(img) {
   try {
@@ -1540,58 +1550,25 @@ infoUp.addEventListener('click', () => {
 });
 
 // ────────────────────────────────────────────────────────────
+// CAROUSEL HINT
+// ────────────────────────────────────────────────────────────
+function showCarouselHint() {
+  const hint = document.getElementById('carouselHint');
+  if (!hint) return;
+  gsap.set(hint, { opacity: 0, x: '-50%' });
+  const tl = gsap.timeline();
+  tl.to(hint, { opacity: 0.7, duration: 0.4, ease: 'power2.out' });
+  tl.to(hint, { x: 'calc(-50% - 6px)', duration: 0.25, ease: 'power1.inOut' });
+  tl.to(hint, { x: 'calc(-50% + 6px)', duration: 0.5, ease: 'power1.inOut' });
+  tl.to(hint, { x: '-50%', duration: 0.25, ease: 'power1.inOut' });
+  tl.to(hint, { opacity: 0, duration: 0.35, ease: 'power2.in' });
+}
+
+// ────────────────────────────────────────────────────────────
 // INIT
 // ────────────────────────────────────────────────────────────
 gsap.set(hubEl, { opacity: 0, pointerEvents: 'none' });
 buildCarousel();
-
-const projBtns = document.querySelectorAll('.proj-btn');
-
-projBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (view !== 'hub') return;
-    const idx = parseInt(btn.dataset.index);
-    snapToIndex(idx);
-  });
-});
-
-const rotations = [22, 11, 0, -11, -22];
-
-projBtns.forEach((btn, i) => {
-  gsap.set(btn, { rotateY: rotations[i], y: 0 });
-
-  btn.addEventListener('mousedown', () => {
-    gsap.killTweensOf(btn);
-    gsap.to(btn, {
-      duration: 0.07,
-      ease: 'power2.in',
-      background: 'linear-gradient(145deg, #d8d6d0 0%, #cac8c1 100%)'
-    });
-  });
-
-  const releaseBtn = () => {
-    gsap.killTweensOf(btn);
-    gsap.to(btn, {
-      duration: 0.15,
-      ease: 'power2.out',
-      background: 'linear-gradient(145deg, #f2f0ec 0%, #e2dfd8 100%)'
-    });
-  };
-
-  btn.addEventListener('mouseup',    releaseBtn);
-  btn.addEventListener('mouseleave', releaseBtn);
-
-  btn.addEventListener('touchstart', () => {
-    gsap.killTweensOf(btn);
-    gsap.to(btn, {
-      duration: 0.07,
-      ease: 'power2.in',
-      background: 'linear-gradient(145deg, #d8d6d0 0%, #cac8c1 100%)'
-    });
-  }, { passive: true });
-
-  btn.addEventListener('touchend', releaseBtn, { passive: true });
-});
 </script>
 </body>
 </html>
