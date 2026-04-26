@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <style>
+    :root {
+      --text-sm:   0.8125rem;
+      --text-base: 1rem;
+      --text-lg:   1.125rem;
+      --text-xl:   1.5rem;
+      --text-2xl:  2rem;
+      --text-3xl:  2.625rem;
+      --text-4xl:  3.5rem;
+      --radius-xl: 24px;
+      --font-display: 'Zodiak', Georgia, serif;
+      --font-ui:      'Satoshi', system-ui, -apple-system, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { height: 100%; }
+
+    body {
+      font-family: var(--font-ui);
+      background: #f8f7f5;
+      color: #111111;
+      height: 100%;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    :focus-visible {
+      outline: 2px solid #888882;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ─── VIEWS ─── */
+    .view {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── SCROLL CANVAS — Entry + Info continuous ─── */
+    #scrollCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #scrollTrack {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 200vh;
+      will-change: transform;
+      background: transparent;
+    }
+
+    /* ─── SHARED LOGO ─── */
+    .site-logo {
+      position: fixed;
+      top: 24px;
+      right: 32px;
+      z-index: 10;
+      height: 56px;
+      width: auto;
+      display: block;
+      line-height: 0;
+    }
+
+    /* Shared white room environment — Entry and Hub */
+    .white-room {
+      background:
+        linear-gradient(to bottom,       rgba(0,0,0,0.07) 0%, transparent 18%),
+        linear-gradient(to top,          rgba(0,0,0,0.07) 0%, transparent 18%),
+        linear-gradient(to right,        rgba(0,0,0,0.06) 0%, transparent 18%),
+        linear-gradient(to left,         rgba(0,0,0,0.06) 0%, transparent 18%),
+        linear-gradient(to bottom right, rgba(0,0,0,0.05) 0%, transparent 25%),
+        linear-gradient(to bottom left,  rgba(0,0,0,0.05) 0%, transparent 25%),
+        linear-gradient(to top right,    rgba(0,0,0,0.05) 0%, transparent 25%),
+        linear-gradient(to top left,     rgba(0,0,0,0.05) 0%, transparent 25%),
+        #f8f7f5;
+    }
+
+    /* ─── BACKGROUND UNDERLAY ─── */
+    #bgLayer {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: #f8f7f5;
+    }
+
+    /* ─── ENTRY ─── */
+    #entry {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+
+    /* Enter button — bezel card style */
+    .enter-btn {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 400;
+      color: #111111;
+      background: #f5f4f0;
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      width: 160px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.10),
+        0 8px 24px rgba(0,0,0,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+      transition:
+        transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .enter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 4px 16px rgba(0,0,0,0.13),
+        0 12px 36px rgba(0,0,0,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+    .enter-btn:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 1px 4px rgba(0,0,0,0.08),
+        0 2px 8px rgba(0,0,0,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    /* About / Contact link on Entry */
+    .entry-about {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #999999;
+      padding: 8px 12px;
+      font-family: var(--font-ui);
+      z-index: 10;
+    }
+
+    .entry-about svg {
+      animation: bob 2s ease-in-out infinite;
+    }
+
+    .entry-about-text {
+      font-size: var(--text-sm);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #999999;
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(4px); }
+    }
+
+    /* ─── HUB ─── */
+    #hub {
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Hub back arrow */
+    .hub-back {
+      position: absolute;
+      top: 24px;
+      left: 32px;
+      z-index: 10;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #999999;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .hub-back:hover { color: #555555; }
+
+    /* ─── CAROUSEL ─── */
+    .carousel-wrap {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1100px;
+      perspective-origin: 50% 50%;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: pan-y;
+    }
+
+    .carousel-wrap.dragging {
+      cursor: grabbing;
+    }
+
+    .carousel-ring {
+      position: relative;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+    }
+
+    .c-outer {
+      position: absolute;
+      transform-style: preserve-3d;
+    }
+
+    .c-scale {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    .c-tilt {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transform-origin: center top;
+    }
+
+    .c-card {
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      box-shadow:
+        0 2px 0px 0px rgba(0,0,0,0.18),
+        0 4px 0px 0px rgba(0,0,0,0.09),
+        0 8px 24px rgba(0,0,0,0.13),
+        0 24px 48px rgba(0,0,0,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.55);
+      border: 1px solid rgba(0,0,0,0.08);
+      transform-style: flat;
+    }
+
+    .c-card img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    .c-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.0) 45%);
+      border-radius: 20px;
+      z-index: 1;
+    }
+
+    .c-shine {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity 0.15s ease;
+    }
+
+    .c-glow {
+      position: absolute;
+      inset: -30px;
+      border-radius: 32px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(48px);
+    }
+
+    .c-label {
+      position: absolute;
+      bottom: 18px;
+      left: 20px;
+      right: 20px;
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 400;
+      color: #ffffff;
+      line-height: 1.2;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* ─── INFO PAGE ─── */
+    #info {
+      position: relative;
+      height: 100vh;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 64px;
+      padding: 80px 0;
+      overflow-y: auto;
+    }
+
+    .info-up {
+      position: absolute;
+      top: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ffffff;
+      padding: 8px 12px;
+      font-family: var(--font-ui);
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .info-up-text {
+      font-size: var(--text-sm);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .info-up svg {
+      animation: bob-up 2s ease-in-out infinite;
+    }
+
+    @keyframes bob-up {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
+
+    /* ─── INFO ZONES ─── */
+    .info-zone {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Zone 1 — Bio block */
+    .info-bio-block {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 96px;
+      width: auto;
+    }
+
+    .info-bio-left {
+      width: 33vw;
+      max-width: 420px;
+      background: #1a1917;
+      border-radius: 12px;
+      padding: 32px;
+      overflow: hidden;
+    }
+
+    .info-bio-right {
+      width: 33vw;
+      max-width: 420px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .info-bio-right img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 12px;
+    }
+
+    .info-bio-name {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 400;
+      color: #e8e5df;
+      margin-bottom: 16px;
+    }
+
+    .info-bio-body {
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+      color: #e8e5df;
+      line-height: 1.75;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+
+    .info-bio-body:last-child { margin-bottom: 0; }
+
+    /* Zone 2 — Contact */
+    .info-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .info-contact-eyebrow {
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: #e8e5df;
+      opacity: 0.36;
+      margin-bottom: 16px;
+    }
+
+    .info-links {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .info-link {
+      font-family: var(--font-ui);
+      font-size: var(--text-base);
+      color: #e8e5df;
+      text-decoration: none;
+      opacity: 0.65;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: opacity 0.2s ease;
+    }
+
+    .info-link:hover { opacity: 1; }
+
+    /* ─── OVERLAY ─── */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    #overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .overlay-panel {
+      background: #181715;
+      border-radius: var(--radius-xl);
+      width: min(580px, calc(100vw - 48px));
+      max-height: calc(100dvh - 80px);
+      overflow-y: auto;
+      padding: 48px;
+      position: relative;
+      color: #e8e5df;
+    }
+
+    .overlay-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #e8e5df;
+      opacity: 0.4;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: opacity 0.2s ease;
+    }
+
+    .overlay-close:hover { opacity: 1; }
+
+    .overlay-meta {
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #e8e5df;
+      opacity: 0.36;
+      margin-bottom: 12px;
+    }
+
+    .overlay-title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 400;
+      color: #e8e5df;
+      margin-bottom: 28px;
+      line-height: 1.15;
+    }
+
+    .overlay-body {
+      font-family: var(--font-ui);
+      font-size: var(--text-base);
+      line-height: 1.82;
+      color: #e8e5df;
+      opacity: 0.65;
+    }
+
+    /* ─── PROJECT NAV BUTTONS ─── */
+    .proj-nav {
+      position: absolute;
+      bottom: 10vh;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: row;
+      gap: 14px;
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      perspective: 600px;
+    }
+
+    .proj-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      font-family: var(--font-ui);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #3a3a38;
+      cursor: pointer;
+      border: 1px solid rgba(0,0,0,0.10);
+      outline: none;
+      letter-spacing: 0.02em;
+      position: relative;
+      background: linear-gradient(145deg, #f2f0ec 0%, #e2dfd8 100%);
+      box-shadow: none;
+    }
+
+    .proj-btn:hover { filter: brightness(1.04); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .info-bio-block { width: 92vw; flex-direction: column; height: auto; }
+      .info-bio-left, .info-bio-right { width: 100%; }
+      .info-bio-left  { border-radius: 12px 12px 0 0; }
+      .info-bio-right { border-radius: 0 0 12px 12px; height: 40vw; }
+      .info-zone      { height: auto; padding: 32px 0; }
+      .overlay-title  { font-size: var(--text-2xl); }
+      .overlay-panel  { padding: 36px 28px; }
+    }
+
+    /* ─── REDUCED MOTION ─── */
+    @media (prefers-reduced-motion: reduce) {
+      .entry-about svg,
+      .info-up svg {
+        animation: none;
+      }
+      .enter-btn {
+        transition: none;
+      }
+      .info-link,
+      .overlay-close,
+      .info-up,
+      .hub-back {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Global logo — fixed, always visible -->
+<img class="site-logo" src="assets/logo.png" alt="AW Design" />
+
+<!-- Shared background underlay — color driven by applyScrollState -->
+<div id="bgLayer"></div>
+
+<!-- ══════════════════════════════════════════
+     SCROLL CANVAS — Entry + Info continuous
+══════════════════════════════════════════ -->
+<div id="scrollCanvas">
+<div id="scrollTrack">
+
+<!-- ══════════════════════════════════════════
+     ENTRY PAGE
+══════════════════════════════════════════ -->
+<section id="entry" aria-label="Entry">
+  <button class="enter-btn" id="enterBtn" aria-label="Enter portfolio">
+    Enter
+  </button>
+
+  <button class="entry-about" id="entryAboutBtn" aria-label="Go to About and Contact">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M9 3.5v11M9 14.5l-4.5-4.5M9 14.5l4.5-4.5"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="entry-about-text">About / Contact</span>
+  </button>
+</section>
+
+<!-- ══════════════════════════════════════════
+     INFO PAGE
+══════════════════════════════════════════ -->
+<section id="info" aria-label="About and contact">
+  <button class="info-up" id="infoUp" aria-label="Return to entry">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M9 14.5v-11M9 3.5l-4.5 4.5M9 3.5l4.5 4.5"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="info-up-text">Back to top</span>
+  </button>
+
+  <!-- Zone 1 — Bio Block -->
+  <div class="info-zone">
+    <div class="info-bio-block">
+      <div class="info-bio-left">
+        
+        <p class="info-bio-body">My name is Alec Wright, an undergraduate architecture student at the Fay Jones School of Architecture and Design, University of Arkansas.</p>
+        <p class="info-bio-body">I'm drawn to the idea that buildings are one of the few things humans make that outlast them. Since childhood, I've been pulled toward creating and building, taking something imagined and making it real. Architecture, to me, is the discipline where craft, detail, and meaning come together, and it's what I'm constantly pushing myself to get better at.</p>
+        <p class="info-bio-body">My work spans digital modeling, visualization, and design documentation built with Rhino 8, Revit, Lumion, Enscape, and the Adobe Creative Suite. This site documents my work as I move through the program, a running record of how my thinking and skills evolve.</p>
+      </div>
+      <div class="info-bio-right">
+        <img src="assets/aboutme2.jpg" alt="Alec Wright" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone 2 — Contact -->
+  <div class="info-zone">
+    <div class="info-contact">
+      <p class="info-contact-eyebrow">Contact</p>
+      <div class="info-links">
+        <a href="mailto:aleccwright@gmail.com" class="info-link">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <rect x="1" y="2.5" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M1 5l6.5 4.5L14 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          aleccwright@gmail.com
+        </a>
+        <a href="#" class="info-link">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="7.5" cy="7.5" r="2.8" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="11.2" cy="3.8" r="0.75" fill="currentColor"/>
+          </svg>
+          @alec_c_wright
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /scrollTrack -->
+</div><!-- /scrollCanvas -->
+
+<!-- ══════════════════════════════════════════
+     GALLERY HUB
+══════════════════════════════════════════ -->
+<section id="hub" class="view white-room" aria-label="Gallery hub">
+  <img class="site-logo" src="assets/logo.png" alt="AW Design" />
+
+  <button class="hub-back" id="hubBackBtn" aria-label="Back to entry">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <div class="carousel-wrap" id="carouselWrap"
+       role="region" aria-label="Project gallery — drag or use arrow keys to browse">
+    <div class="carousel-ring" id="carouselRing"></div>
+  </div>
+
+  <div class="proj-nav" id="projNav">
+    <button class="proj-btn" data-index="0" aria-label="Go to project 1">1</button>
+    <button class="proj-btn" data-index="1" aria-label="Go to project 2">2</button>
+    <button class="proj-btn" data-index="2" aria-label="Go to project 3">3</button>
+    <button class="proj-btn" data-index="3" aria-label="Go to project 4">4</button>
+    <button class="proj-btn" data-index="4" aria-label="Go to project 5">5</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PROJECT OVERLAY
+══════════════════════════════════════════ -->
+<div id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+  <div class="overlay-panel">
+    <button class="overlay-close" id="overlayClose" aria-label="Close project">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <p class="overlay-meta" id="overlayMeta"></p>
+    <h2 class="overlay-title" id="overlayTitle"></h2>
+    <p class="overlay-body" id="overlayBody"></p>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ────────────────────────────────────────────────────────────
+// DATA
+// ────────────────────────────────────────────────────────────
+const PROJECTS = [
+  { name: 'Project One',   seed: 'arch1',     type: 'Architecture', year: '2024' },
+  { name: 'Project Two',   seed: 'build2',    type: 'Urban Design',  year: '2024' },
+  { name: 'Project Three', seed: 'design3',   type: 'Interior',      year: '2023' },
+  { name: 'Project Four',  seed: 'concrete4', type: 'Installation',  year: '2023' },
+  { name: 'Project Five',  seed: 'studio5',   type: 'Research',      year: '2022' },
+];
+
+const OVERLAY_BODY =
+  'This project investigates the tension between mass and void — how the subtraction ' +
+  'of material can create as much meaning as its addition. Working within a constrained ' +
+  'site, the proposal negotiates between existing urban grain and the desire for a new ' +
+  'kind of publicness. Structural logic is made visible throughout, forming the primary ' +
+  'aesthetic language of the work.';
+
+// ────────────────────────────────────────────────────────────
+// CONFIG
+// ────────────────────────────────────────────────────────────
+const CARD_COUNT = PROJECTS.length;
+const CARD_STEP  = 360 / CARD_COUNT;
+
+// ────────────────────────────────────────────────────────────
+// STATE
+// ────────────────────────────────────────────────────────────
+let view            = 'entry'; // 'entry' | 'hub' | 'info'
+let isTransitioning = false;
+let angle           = 0;
+let velocity        = 0;
+let isDragging      = false;
+let lastDragX       = 0;
+let lastDragT       = 0;
+let coastingRaf     = null;
+let snapTween       = null;
+
+let touchStartX = 0;
+let touchStartY = 0;
+let touchDir    = null;
+
+// Scroll-driven Entry ↔ Info
+let scrollProgress    = 0;
+let scrollVelocity    = 0;
+let scrollRaf         = null;
+let scrollTouchStartY = 0;
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouchDevice = window.matchMedia('(hover: none)').matches;
+
+const pState = PROJECTS.map(() => ({ tx: 0, ty: 0, glowColor: null }));
+
+// ────────────────────────────────────────────────────────────
+// DOM
+// ────────────────────────────────────────────────────────────
+const bgLayer       = document.getElementById('bgLayer');
+const scrollCanvas  = document.getElementById('scrollCanvas');
+const scrollTrack   = document.getElementById('scrollTrack');
+const entryEl       = document.getElementById('entry');
+const hubEl         = document.getElementById('hub');
+const infoEl        = document.getElementById('info');
+const enterBtn      = document.getElementById('enterBtn');
+const entryAboutBtn = document.getElementById('entryAboutBtn');
+const hubBackBtn    = document.getElementById('hubBackBtn');
+const carouselWrap  = document.getElementById('carouselWrap');
+const carouselRing  = document.getElementById('carouselRing');
+const infoUp        = document.getElementById('infoUp');
+const overlayEl     = document.getElementById('overlay');
+const overlayClose  = document.getElementById('overlayClose');
+const overlayTitle  = document.getElementById('overlayTitle');
+const overlayMeta   = document.getElementById('overlayMeta');
+const overlayBody   = document.getElementById('overlayBody');
+
+const outers = [], tilts = [], shines = [];
+
+// ────────────────────────────────────────────────────────────
+// AUDIO
+// ────────────────────────────────────────────────────────────
+function playEnterSound() {
+  const audio = new Audio('assets/button.mp3');
+  audio.volume = 0.7;
+  audio.play().catch(() => {});
+}
+
+// ────────────────────────────────────────────────────────────
+// HELPERS
+// ────────────────────────────────────────────────────────────
+function isMobile() { return window.innerWidth < 640; }
+
+function cardDims() {
+  if (isMobile()) {
+    const w = Math.min(300, window.innerWidth * 0.75);
+    return { w, h: Math.round(w * 9 / 16), r: 260 };
+  }
+  const w = Math.min(480, window.innerWidth * 0.33);
+  return { w, h: Math.round(w * 9 / 16), r: 420 };
+}
+
+function normAngle(a) {
+  a = ((a % 360) + 360) % 360;
+  return a > 180 ? a - 360 : a;
+}
+
+// ────────────────────────────────────────────────────────────
+// BUILD CAROUSEL
+// ────────────────────────────────────────────────────────────
+function buildCarousel() {
+  PROJECTS.forEach((proj, i) => {
+    const outer = document.createElement('div');
+    outer.className = 'c-outer';
+    outer.style.transformStyle = 'preserve-3d';
+
+    const glow = document.createElement('div');
+    glow.className = 'c-glow';
+    outer.insertBefore(glow, outer.firstChild);
+
+    const scale = document.createElement('div');
+    scale.className = 'c-scale';
+
+    const tilt = document.createElement('div');
+    tilt.className = 'c-tilt';
+
+    const card = document.createElement('div');
+    card.className = 'c-card';
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `View ${proj.name}`);
+
+    const img = document.createElement('img');
+    img.crossOrigin = 'anonymous';
+    img.src = `https://picsum.photos/seed/${proj.seed}/960/540`;
+    img.alt = proj.name;
+    img.width  = 960;
+    img.height = 540;
+    img.loading = 'lazy';
+
+    const gradient = document.createElement('div');
+    gradient.className = 'c-gradient';
+
+    const shine = document.createElement('div');
+    shine.className = 'c-shine';
+    shine.setAttribute('aria-hidden', 'true');
+
+    const label = document.createElement('div');
+    label.className = 'c-label';
+    label.textContent = proj.name;
+
+    card.appendChild(img);
+    card.appendChild(gradient);
+    card.appendChild(shine);
+    card.appendChild(label);
+    tilt.appendChild(card);
+    scale.appendChild(tilt);
+    outer.appendChild(scale);
+    carouselRing.appendChild(outer);
+
+    outers.push(outer);
+    tilts.push(tilt);
+    shines.push(shine);
+
+    card.addEventListener('pointerup', () => {
+      if (isDragging) return;
+      const na = normAngle(i * CARD_STEP - angle);
+      if (Math.abs(na) < CARD_STEP * 0.55) {
+        openOverlay(proj);
+      } else {
+        snapToIndex(i);
+      }
+    });
+
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openOverlay(proj);
+      }
+    });
+
+    if (!prefersReducedMotion && !isTouchDevice) {
+      initParallax(card, tilt, shine, pState[i]);
+    }
+  });
+
+  resizeCards();
+  updateRing();
+}
+
+// ────────────────────────────────────────────────────────────
+// RESIZE CARDS
+// ────────────────────────────────────────────────────────────
+function resizeCards() {
+  const { w, h } = cardDims();
+  outers.forEach(o => {
+    o.style.width  = w + 'px';
+    o.style.height = h + 'px';
+    o.style.top    = (-h / 2) + 'px';
+    o.style.left   = (-w / 2) + 'px';
+  });
+}
+
+window.addEventListener('resize', () => {
+  if (isTransitioning) return;
+  resizeCards();
+  updateRing();
+});
+
+// ────────────────────────────────────────────────────────────
+// UPDATE RING
+// ────────────────────────────────────────────────────────────
+function updateRing() {
+  const { r } = cardDims();
+  outers.forEach((outer, i) => {
+    const ca    = i * CARD_STEP - angle;
+    const rad   = ca * Math.PI / 180;
+    const cos   = Math.cos(rad);
+    const depth = (cos + 1) / 2; // 0 = back, 1 = front
+
+    const brightness = 0.5 + depth * 0.5;
+    const scale      = 0.78 + depth * 0.22;
+    const zi         = Math.round((cos + 1) * 50);
+
+    // Floor cast shadow: front card full opacity, sides at ~55%
+    const shadowMult = 0.55 + depth * 0.45;
+    const sh1 = (0.13 * shadowMult).toFixed(3);
+    const sh2 = (0.10 * shadowMult).toFixed(3);
+
+    outer.style.transform = `rotateY(${ca}deg) translateZ(${r}px)`;
+    outer.style.zIndex    = zi;
+    const scaleEl = outer.querySelector('.c-scale');
+    scaleEl.style.transform = `scale(${scale})`;
+    scaleEl.style.filter    =
+      `brightness(${brightness}) drop-shadow(0 32px 24px rgba(0,0,0,${sh1})) drop-shadow(0 12px 8px rgba(0,0,0,${sh2}))`;
+  });
+}
+
+// ────────────────────────────────────────────────────────────
+// SNAP
+// ────────────────────────────────────────────────────────────
+function snapToNearest() {
+  if (isTransitioning) return;
+  if (snapTween) snapTween.kill();
+  const nearest = Math.round(angle / CARD_STEP) * CARD_STEP;
+  const proxy = { v: angle };
+  snapTween = gsap.to(proxy, {
+    v: nearest,
+    duration: 2.0,
+    ease: 'elastic.out(1, 0.75)',
+    onUpdate() { angle = proxy.v; updateRing(); },
+  });
+}
+
+function snapToIndex(idx) {
+  if (snapTween) snapTween.kill();
+  const target = idx * CARD_STEP;
+  const diff   = ((target - angle) % 360 + 540) % 360 - 180;
+  const dest   = angle + diff;
+  const proxy  = { v: angle };
+  snapTween = gsap.to(proxy, {
+    v: dest,
+    duration: 2.0,
+    ease: 'elastic.out(1, 0.75)',
+    onUpdate() { angle = proxy.v; updateRing(); },
+  });
+}
+
+// ────────────────────────────────────────────────────────────
+// DRAG — MOUSE
+// ────────────────────────────────────────────────────────────
+let dragStartX = 0;
+let dragMoved  = false;
+
+carouselWrap.addEventListener('mousedown', (e) => {
+  if (view !== 'hub') return;
+  if (snapTween) snapTween.kill();
+  cancelAnimationFrame(coastingRaf);
+  isDragging = true;
+  dragMoved  = false;
+  dragStartX = e.clientX;
+  lastDragX  = e.clientX;
+  lastDragT  = performance.now();
+  velocity   = 0;
+  carouselWrap.classList.add('dragging');
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  const dx = e.clientX - lastDragX;
+  if (Math.abs(e.clientX - dragStartX) > 4) dragMoved = true;
+  const dt  = Math.max(1, performance.now() - lastDragT);
+  velocity  = (dx / dt) * 10;
+  angle    -= dx * 0.22;
+  lastDragX = e.clientX;
+  lastDragT = performance.now();
+  updateRing();
+});
+
+window.addEventListener('mouseup', () => {
+  if (!isDragging) return;
+  isDragging = false;
+  carouselWrap.classList.remove('dragging');
+  startCoast();
+});
+
+// ────────────────────────────────────────────────────────────
+// COASTING INERTIA
+// ────────────────────────────────────────────────────────────
+function startCoast() {
+  if (prefersReducedMotion || Math.abs(velocity) < 0.3) {
+    snapToNearest();
+    return;
+  }
+  function frame() {
+    velocity *= 0.91;
+    angle    -= velocity;
+    updateRing();
+    if (Math.abs(velocity) < 0.08) { snapToNearest(); return; }
+    coastingRaf = requestAnimationFrame(frame);
+  }
+  coastingRaf = requestAnimationFrame(frame);
+}
+
+// ────────────────────────────────────────────────────────────
+// TOUCH — CAROUSEL ONLY
+// ────────────────────────────────────────────────────────────
+carouselWrap.addEventListener('touchstart', (e) => {
+  if (view !== 'hub') return;
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+  touchDir    = null;
+  isDragging  = false;
+  dragMoved   = false;
+  lastDragX   = t.clientX;
+  lastDragT   = performance.now();
+  velocity    = 0;
+  if (snapTween) snapTween.kill();
+  cancelAnimationFrame(coastingRaf);
+}, { passive: true });
+
+carouselWrap.addEventListener('touchmove', (e) => {
+  if (view !== 'hub') return;
+  const t  = e.touches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+
+  if (!touchDir && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+    touchDir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+    if (touchDir === 'h') {
+      isDragging = true;
+      carouselWrap.classList.add('dragging');
+    }
+  }
+
+  if (touchDir === 'h') {
+    e.preventDefault();
+    const mdx = t.clientX - lastDragX;
+    const dt  = Math.max(1, performance.now() - lastDragT);
+    velocity  = (mdx / dt) * 10;
+    angle    -= mdx * 0.22;
+    lastDragX = t.clientX;
+    lastDragT = performance.now();
+    dragMoved = true;
+    updateRing();
+  }
+}, { passive: false });
+
+carouselWrap.addEventListener('touchend', () => {
+  if (view !== 'hub') return;
+  carouselWrap.classList.remove('dragging');
+  if (isDragging) {
+    isDragging = false;
+    startCoast();
+  }
+  touchDir = null;
+}, { passive: true });
+
+// ────────────────────────────────────────────────────────────
+// WHEEL — hub guard + Entry/Info physical scroll
+// ────────────────────────────────────────────────────────────
+window.addEventListener('wheel', (e) => {
+  if (view === 'hub') { e.preventDefault(); return; }
+  if (isTransitioning) { e.preventDefault(); return; }
+  if (view !== 'entry' && view !== 'info') return;
+  e.preventDefault();
+  scrollVelocity += e.deltaY * 0.000085;
+  scrollVelocity = Math.max(-0.022, Math.min(0.022, scrollVelocity));
+  startScrollLoop();
+}, { passive: false });
+
+// ────────────────────────────────────────────────────────────
+// TOUCH — Entry/Info physical scroll
+// ────────────────────────────────────────────────────────────
+window.addEventListener('touchstart', (e) => {
+  if (view !== 'entry' && view !== 'info') return;
+  scrollTouchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+  if (isTransitioning) { e.preventDefault(); return; }
+  if (view === 'hub') return;
+  if (view !== 'entry' && view !== 'info') return;
+  const dy = scrollTouchStartY - e.touches[0].clientY;
+  scrollTouchStartY = e.touches[0].clientY;
+  scrollVelocity += dy * 0.00012;
+  scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
+  startScrollLoop();
+  e.preventDefault();
+}, { passive: false });
+
+// ────────────────────────────────────────────────────────────
+// SCROLL-DRIVEN ENTRY ↔ INFO (physical track)
+// ────────────────────────────────────────────────────────────
+function applyScrollState(p) {
+  // A: Move scroll track
+  scrollTrack.style.transform = `translateY(${-p * 100}vh)`;
+
+  // B: Drive the fixed underlay — single source of background color
+  const r = Math.round(248 + (14  - 248) * p);
+  const g = Math.round(247 + (13  - 247) * p);
+  const b = Math.round(245 + (12  - 245) * p);
+  bgLayer.style.backgroundColor = `rgb(${r},${g},${b})`;
+
+  // C: Enter button rises and fades
+  enterBtn.style.transform = `translateY(${-p * 60}px)`;
+  enterBtn.style.opacity   = String(Math.max(0, 1 - p * 2));
+
+  // D: About arrow fades out
+  entryAboutBtn.style.opacity = String(Math.max(0, 1 - p * 2.5));
+
+  // E: Info up arrow fades in only when near fully scrolled
+  const infoUpEl = document.getElementById('infoUp');
+  if (infoUpEl) {
+    const arrowOpacity = Math.max(0, (p - 0.9) / 0.1);
+    infoUpEl.style.opacity = arrowOpacity;
+    infoUpEl.style.pointerEvents = arrowOpacity > 0.05 ? 'auto' : 'none';
+  }
+}
+
+function startScrollLoop() {
+  if (scrollRaf) return;
+  scrollRaf = requestAnimationFrame(scrollLoop);
+}
+
+function scrollLoop() {
+  scrollProgress += scrollVelocity;
+  scrollVelocity *= 0.96;
+  scrollProgress = Math.max(0, Math.min(1, scrollProgress));
+  applyScrollState(scrollProgress);
+
+  if (Math.abs(scrollVelocity) < 0.00003) {
+    scrollRaf = null;
+    if (scrollProgress >= 0.95) view = 'info';
+    else if (scrollProgress <= 0.05) view = 'entry';
+    else view = 'entry';
+    return;
+  }
+  scrollRaf = requestAnimationFrame(scrollLoop);
+}
+
+function snapTo(target) {
+  cancelAnimationFrame(scrollRaf);
+  scrollRaf = null;
+  const obj = { p: scrollProgress };
+  gsap.to(obj, {
+    p: target,
+    duration: 0.55,
+    ease: 'power3.out',
+    onUpdate() {
+      scrollProgress = obj.p;
+      applyScrollState(scrollProgress);
+    },
+    onComplete() {
+      view = target === 1 ? 'info' : 'entry';
+    },
+  });
+}
+
+// ────────────────────────────────────────────────────────────
+// KEYBOARD CAROUSEL NAV
+// ────────────────────────────────────────────────────────────
+carouselWrap.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    angle += CARD_STEP;
+    updateRing();
+    snapToNearest();
+  }
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    angle -= CARD_STEP;
+    updateRing();
+    snapToNearest();
+  }
+});
+
+// ────────────────────────────────────────────────────────────
+// VIEW TRANSITIONS
+// ────────────────────────────────────────────────────────────
+function triggerToHub_fromEntry() {
+  if (view !== 'entry') return;
+  view = 'hub';
+  isTransitioning = true;
+
+  // Ensure scroll track is at entry position before showing hub
+  scrollProgress = 0;
+  applyScrollState(0);
+
+  if (prefersReducedMotion) {
+    gsap.set(hubEl,        { opacity: 1, pointerEvents: 'auto' });
+    gsap.set(carouselWrap, { y: 0, opacity: 1 });
+    isTransitioning = false;
+    updateRing();
+    return;
+  }
+
+  // Pre-calculate card dimensions while hub is invisible
+  resizeCards();
+  updateRing();
+
+  gsap.set(hubEl, { opacity: 0, pointerEvents: 'auto' });
+
+  const dropStart = -window.innerHeight * 1.1;
+  gsap.set(carouselWrap, { y: dropStart, opacity: 0 });
+
+  const finalAngle = angle;
+  angle = finalAngle + 180;
+  updateRing();
+
+  // t=0: Fade out buttons
+  gsap.to([enterBtn, entryAboutBtn], {
+    opacity: 0,
+    duration: 0.31,
+    ease: 'power2.out',
+    onComplete() {
+      // Hub snaps visible — covers scroll canvas underneath
+      gsap.set(hubEl, { opacity: 1 });
+
+      // t=0.31: Carousel drops
+      gsap.to(carouselWrap, {
+        y: 0,
+        opacity: 1,
+        duration: 1.375,
+        ease: 'expo.out',
+      });
+
+      // t=0.31: Spin 180deg via proxy
+      const proxy = { v: angle };
+      gsap.to(proxy, {
+        v: finalAngle,
+        duration: 1.375,
+        ease: 'expo.out',
+        onUpdate() { angle = proxy.v; updateRing(); },
+        onComplete() { isTransitioning = false; },
+      });
+    },
+  });
+}
+
+function triggerToEntry_fromHub() {
+  if (view !== 'hub') return;
+  isTransitioning = true;
+  if (snapTween) snapTween.kill();
+
+  const riseEnd = -window.innerHeight * 1.1;
+
+  if (prefersReducedMotion) {
+    view = 'entry';
+    hubEl.style.opacity = '0';
+    hubEl.style.pointerEvents = 'none';
+    gsap.set(carouselWrap, { y: riseEnd, opacity: 0 });
+    enterBtn.style.transform = '';
+    gsap.set([enterBtn, entryAboutBtn], { opacity: 1 });
+    scrollProgress = 0;
+    applyScrollState(0);
+    isTransitioning = false;
+    return;
+  }
+
+  // t=0: Carousel rises
+  gsap.to(carouselWrap, {
+    y: riseEnd,
+    opacity: 0,
+    duration: 1.375,
+    ease: 'expo.in',
+  });
+
+  // t=0: Spin 180deg via proxy
+  const startAngle = angle;
+  const proxy = { v: startAngle };
+  gsap.to(proxy, {
+    v: startAngle + 180,
+    duration: 1.375,
+    ease: 'expo.in',
+    onUpdate() { angle = proxy.v; updateRing(); },
+    onComplete() {
+      view = 'entry';
+      hubEl.style.opacity = '0';
+      hubEl.style.pointerEvents = 'none';
+      gsap.set(carouselWrap, { y: riseEnd, opacity: 0 });
+      isTransitioning = false;
+    },
+  });
+
+  // t=0: Hub fades out — scroll canvas underneath is revealed
+  gsap.to(hubEl, {
+    opacity: 0,
+    duration: 0.625,
+    ease: 'power2.inOut',
+  });
+
+  // t=0.625: Restore scroll track to entry, restore buttons
+  gsap.delayedCall(0.625, () => {
+    scrollProgress = 0;
+    applyScrollState(0);
+    enterBtn.style.transform = '';
+  });
+
+  gsap.to([enterBtn, entryAboutBtn], {
+    opacity: 1,
+    duration: 0.31,
+    ease: 'power2.out',
+    delay: 0.625,
+  });
+}
+
+function triggerToInfo_fromEntry() {
+  if (view !== 'entry') return;
+  // Animate scroll track to info position
+  snapTo(1);
+}
+
+function triggerToEntry_fromInfo() {
+  if (view !== 'info') return;
+  // Reset button inline styles immediately so they restore correctly
+  enterBtn.style.transform    = '';
+  enterBtn.style.opacity      = '1';
+  entryAboutBtn.style.opacity = '1';
+  // Animate scroll track back to entry position
+  snapTo(0);
+}
+
+// ────────────────────────────────────────────────────────────
+// APPLE TV PARALLAX
+// ────────────────────────────────────────────────────────────
+function initParallax(card, tiltEl, shineEl, s) {
+  const scaleEl = card.closest('.c-outer').querySelector('.c-scale');
+
+  card.addEventListener('mouseenter', () => {
+    gsap.to(s, {
+      tx: 6, ty: 0,
+      duration: 0.35,
+      ease: 'power2.out',
+      onUpdate: () => {
+        tiltEl.style.transform =
+          `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`;
+      }
+    });
+    gsap.to(scaleEl, {
+      scale: 1.06,
+      duration: 0.35,
+      ease: 'power2.out'
+    });
+
+    shineEl.style.background =
+      'radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.13) 0%, transparent 65%)';
+    gsap.to(shineEl, { opacity: 1, duration: 0.35 });
+
+    if (!s.glowColor) {
+      const img = card.querySelector('img');
+      if (img && img.complete) s.glowColor = sampleImageColor(img);
+      else if (img) img.addEventListener('load', () => {
+        s.glowColor = sampleImageColor(img);
+      }, { once: true });
+    }
+    const glowEl = card.closest('.c-outer').querySelector('.c-glow');
+    if (glowEl) {
+      if (s.glowColor) glowEl.style.background = s.glowColor;
+      gsap.to(glowEl, { opacity: 0.28, duration: 0.5 });
+    }
+  });
+
+  card.addEventListener('mouseleave', () => {
+    gsap.to(s, {
+      tx: 0, ty: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+      onUpdate: () => {
+        tiltEl.style.transform =
+          `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`;
+      }
+    });
+    gsap.to(scaleEl, {
+      scale: 1.0,
+      duration: 0.45,
+      ease: 'power2.out'
+    });
+    gsap.to(shineEl, { opacity: 0, duration: 0.4 });
+    const glowEl = card.closest('.c-outer').querySelector('.c-glow');
+    if (glowEl) gsap.to(glowEl, { opacity: 0, duration: 0.5 });
+  });
+}
+
+function sampleImageColor(img) {
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 16; canvas.height = 9;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 16, 9);
+    const data = ctx.getImageData(0, 0, 16, 9).data;
+    let r = 0, g = 0, b = 0, count = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      const brightness = (data[i] + data[i+1] + data[i+2]) / 3;
+      if (brightness > 30 && brightness < 230) {
+        r += data[i]; g += data[i+1]; b += data[i+2]; count++;
+      }
+    }
+    if (count === 0) return 'rgb(180,175,165)';
+    return `rgb(${Math.round(r/count)},${Math.round(g/count)},${Math.round(b/count)})`;
+  } catch(e) {
+    return 'rgb(180,175,165)';
+  }
+}
+
+// ────────────────────────────────────────────────────────────
+// OVERLAY
+// ────────────────────────────────────────────────────────────
+function openOverlay(proj) {
+  overlayTitle.textContent = proj.name;
+  overlayMeta.textContent  = `${proj.type} · ${proj.year}`;
+  overlayBody.textContent  = OVERLAY_BODY;
+  overlayEl.classList.add('open');
+  overlayClose.focus();
+}
+
+function closeOverlay() {
+  overlayEl.classList.remove('open');
+}
+
+overlayClose.addEventListener('click', closeOverlay);
+overlayEl.addEventListener('click', (e) => {
+  if (e.target === overlayEl) closeOverlay();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && overlayEl.classList.contains('open')) closeOverlay();
+});
+
+// ────────────────────────────────────────────────────────────
+// BUTTON WIRING
+// ────────────────────────────────────────────────────────────
+enterBtn.addEventListener('mousedown', playEnterSound);
+enterBtn.addEventListener('click', triggerToHub_fromEntry);
+enterBtn.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerToHub_fromEntry(); }
+});
+
+entryAboutBtn.addEventListener('click', () => {
+  if (isTransitioning) return;
+  gsap.to({ p: scrollProgress }, {
+    p: 1,
+    duration: 1.1,
+    ease: 'power2.inOut',
+    onUpdate: function() {
+      scrollProgress = this.targets()[0].p;
+      applyScrollState(scrollProgress);
+    },
+    onComplete: () => { view = 'info'; },
+  });
+});
+
+hubBackBtn.addEventListener('click', triggerToEntry_fromHub);
+
+infoUp.addEventListener('click', () => {
+  gsap.to({ p: scrollProgress }, {
+    p: 0,
+    duration: 1.1,
+    ease: 'power2.inOut',
+    onUpdate: function() {
+      scrollProgress = this.targets()[0].p;
+      applyScrollState(scrollProgress);
+    },
+    onComplete: () => {
+      view = 'entry';
+      enterBtn.style.opacity = '1';
+      enterBtn.style.transform = '';
+      entryAboutBtn.style.opacity = '1';
+    },
+  });
+});
+
+// ────────────────────────────────────────────────────────────
+// INIT
+// ────────────────────────────────────────────────────────────
+gsap.set(hubEl, { opacity: 0, pointerEvents: 'none' });
+buildCarousel();
+
+const projBtns = document.querySelectorAll('.proj-btn');
+
+projBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (view !== 'hub') return;
+    const idx = parseInt(btn.dataset.index);
+    snapToIndex(idx);
+  });
+});
+
+const rotations = [22, 11, 0, -11, -22];
+
+projBtns.forEach((btn, i) => {
+  gsap.set(btn, { rotateY: rotations[i], y: 0 });
+
+  btn.addEventListener('mousedown', () => {
+    gsap.killTweensOf(btn);
+    gsap.to(btn, {
+      duration: 0.07,
+      ease: 'power2.in',
+      background: 'linear-gradient(145deg, #d8d6d0 0%, #cac8c1 100%)'
+    });
+  });
+
+  const releaseBtn = () => {
+    gsap.killTweensOf(btn);
+    gsap.to(btn, {
+      duration: 0.15,
+      ease: 'power2.out',
+      background: 'linear-gradient(145deg, #f2f0ec 0%, #e2dfd8 100%)'
+    });
+  };
+
+  btn.addEventListener('mouseup',    releaseBtn);
+  btn.addEventListener('mouseleave', releaseBtn);
+
+  btn.addEventListener('touchstart', () => {
+    gsap.killTweensOf(btn);
+    gsap.to(btn, {
+      duration: 0.07,
+      ease: 'power2.in',
+      background: 'linear-gradient(145deg, #d8d6d0 0%, #cac8c1 100%)'
+    });
+  }, { passive: true });
+
+  btn.addEventListener('touchend', releaseBtn, { passive: true });
+});
+</script>
+</body>
+</html>
