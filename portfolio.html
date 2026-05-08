@@ -755,6 +755,73 @@
   </div>
 </div>
 
+<section id="projectPage" aria-label="Project page"
+  style="position:fixed;inset:0;z-index:300;pointer-events:none;opacity:0;overflow:hidden;">
+
+  <div id="projectCover" style="position:absolute;inset:0;">
+    <img id="projectCoverImg" src="" alt=""
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;display:block;" />
+  </div>
+
+  <div style="
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+  "></div>
+
+  <button id="projectBack" aria-label="Back to gallery" style="
+    position: absolute;
+    top: 28px;
+    left: 32px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px;
+    z-index: 10;
+  ">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+         aria-hidden="true">
+      <path d="M12 4L6 9L12 14" stroke="currentColor"
+            stroke-width="1.4" stroke-linecap="round"
+            stroke-linejoin="round"/>
+    </svg>
+    Back to Gallery
+  </button>
+
+  <div style="
+    position: absolute;
+    top: 28px;
+    right: 32px;
+    text-align: right;
+    z-index: 10;
+  ">
+    <div id="projectTitle" style="
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+    "></div>
+    <div id="projectDate" style="
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+      color: rgba(255,255,255,0.65);
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+    "></div>
+  </div>
+
+</section>
+
 <script>
 'use strict';
 
@@ -762,11 +829,11 @@
 // DATA
 // ────────────────────────────────────────────────────────────
 const PROJECTS = [
-  { name: 'Project One',   seed: 'arch1',     type: 'Architecture', year: '2024' },
-  { name: 'Project Two',   seed: 'build2',    type: 'Urban Design',  year: '2024' },
-  { name: 'Project Three', seed: 'design3',   type: 'Interior',      year: '2023' },
-  { name: 'Project Four',  seed: 'concrete4', type: 'Installation',  year: '2023' },
-  { name: 'Project Five',  seed: 'studio5',   type: 'Research',      year: '2022' },
+  { name: 'Project One',   seed: 'arch1',     cover: null,                  type: 'Architecture', year: '2024' },
+  { name: 'Project Two',   seed: 'build2',    cover: 'assets/P2cover.jpg',  type: 'Urban Design',  year: 'January – May 2025', url: 'project2.html' },
+  { name: 'Project Three', seed: 'design3',   cover: null,                  type: 'Interior',      year: '2023' },
+  { name: 'Project Four',  seed: 'concrete4', cover: null,                  type: 'Installation',  year: '2023' },
+  { name: 'Project Five',  seed: 'studio5',   cover: null,                  type: 'Research',      year: '2022' },
 ];
 
 const OVERLAY_BODY =
@@ -808,7 +875,12 @@ let scrollTouchStartY = 0;
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isTouchDevice = window.matchMedia('(hover: none)').matches;
 
-const pState = PROJECTS.map(() => ({ tx: 0, ty: 0, glowColor: null }));
+const pState = PROJECTS.map(() => ({
+  tx: 0, ty: 0,
+  tgx: 0, tgy: 0,
+  glowColor: null,
+  rafId: null
+}));
 
 // ────────────────────────────────────────────────────────────
 // DOM
@@ -893,11 +965,11 @@ function buildCarousel() {
 
     const img = document.createElement('img');
     img.crossOrigin = 'anonymous';
-    img.src = `https://picsum.photos/seed/${proj.seed}/960/540`;
-    img.alt = proj.name;
-    img.width  = 960;
-    img.height = 540;
+    img.alt     = proj.name;
     img.loading = 'lazy';
+    img.src = proj.cover
+      ? proj.cover
+      : `https://picsum.photos/seed/${proj.seed}/960/540`;
 
     const gradient = document.createElement('div');
     gradient.className = 'c-gradient';
@@ -940,6 +1012,20 @@ function buildCarousel() {
       }
     });
 
+    card.addEventListener('click', () => {
+      if (isDragging) return;
+      if (view !== 'hub') return;
+      const outer = card.closest('.c-outer');
+      const zi = parseInt(outer.style.zIndex || '0');
+      if (zi < 45) return;
+      if (!proj.cover) return;
+      openProject(proj, card);
+    });
+
+    if (!isTouchDevice) {
+      initParallax(card, tilt, pState[i]);
+    }
+
   });
 
   resizeCards();
@@ -976,7 +1062,6 @@ function updateRing() {
     const cos   = Math.cos(rad);
     const depth = (cos + 1) / 2; // 0 = back, 1 = front
 
-    const brightness = 0.5 + depth * 0.5;
     const scale      = 0.78 + depth * 0.22;
     const zi         = Math.round((cos + 1) * 50);
 
@@ -986,7 +1071,7 @@ function updateRing() {
     const isFront = depth > 0.95;
 
     const sat = isFront ? 1.0 : 0.45;
-    scaleEl.style.filter = `brightness(${brightness}) saturate(${sat})`;
+    scaleEl.style.filter = `saturate(${sat})`;
 
     if (view === 'hub') {
 
@@ -1006,10 +1091,6 @@ function updateRing() {
 
       if (isFront) {
         gsap.to(scaleEl, { scale: 1.06, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
-        gsap.to(s, {
-          tx: 6, ty: 0, duration: 0.35, ease: 'power2.out', overwrite: 'auto',
-          onUpdate: () => { tiltEl.style.transform = `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`; }
-        });
         shineEl.style.background =
           'radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.13) 0%, transparent 65%)';
         gsap.to(shineEl, { opacity: 1, duration: 0.35, overwrite: 'auto' });
@@ -1460,7 +1541,55 @@ function triggerToEntry_fromInfo() {
 // ────────────────────────────────────────────────────────────
 // APPLE TV PARALLAX
 // ────────────────────────────────────────────────────────────
-function initParallax() {}
+function initParallax(card, tiltEl, s) {
+  const outer = card.closest('.c-outer');
+
+  outer.addEventListener('mousemove', (e) => {
+    if (view !== 'hub') return;
+    const zi = parseInt(outer.style.zIndex || '0');
+    if (zi < 45) return;
+
+    const rect = card.getBoundingClientRect();
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top)  / rect.height;
+
+    s.tgx = (ny - 0.5) * -14;
+    s.tgy = (nx - 0.5) *  14;
+
+    if (!s.rafId) runParallax(tiltEl, s);
+  });
+
+  outer.addEventListener('mouseleave', () => {
+    if (view !== 'hub') return;
+    s.tgx = 0;
+    s.tgy = 0;
+    if (s.rafId) {
+      cancelAnimationFrame(s.rafId);
+      s.rafId = null;
+    }
+    gsap.to(s, {
+      tx: 0, ty: 0,
+      duration: 0.6,
+      ease: 'power2.out',
+      overwrite: 'auto',
+      onUpdate: () => {
+        tiltEl.style.transform = `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`;
+      }
+    });
+  });
+}
+
+function runParallax(tiltEl, s) {
+  s.tx += (s.tgx - s.tx) * 0.1;
+  s.ty += (s.tgy - s.ty) * 0.1;
+  tiltEl.style.transform = `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`;
+  const settled =
+    Math.abs(s.tgx - s.tx) < 0.05 &&
+    Math.abs(s.tgy - s.ty) < 0.05;
+  s.rafId = settled
+    ? null
+    : requestAnimationFrame(() => runParallax(tiltEl, s));
+}
 
 function sampleImageColor(img) {
   try {
@@ -1505,6 +1634,104 @@ overlayEl.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && overlayEl.classList.contains('open')) closeOverlay();
 });
+
+// ────────────────────────────────────────────────────────────
+// PROJECT PAGE
+// ────────────────────────────────────────────────────────────
+let activeProjectCard = null;
+
+function openProject(proj, cardEl) {
+  if (!proj.cover) return;
+  activeProjectCard = cardEl;
+
+  const page  = document.getElementById('projectPage');
+  const cover = document.getElementById('projectCoverImg');
+  const title = document.getElementById('projectTitle');
+  const date  = document.getElementById('projectDate');
+  const back  = document.getElementById('projectBack');
+
+  cover.src = proj.cover;
+  title.textContent = proj.name;
+  date.textContent  = proj.year;
+  gsap.set([title, date, back], { opacity: 0 });
+
+  const rect = cardEl.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  const t = Math.round(rect.top);
+  const l = Math.round(rect.left);
+  const r = Math.round(vw - rect.right);
+  const b = Math.round(vh - rect.bottom);
+  const radius = 20;
+
+  gsap.set(page, {
+    opacity: 1,
+    pointerEvents: 'auto'
+  });
+
+  gsap.set(cover, {
+    clipPath: `inset(${t}px ${r}px ${b}px ${l}px round ${radius}px)`
+  });
+
+  gsap.to(cover, {
+    clipPath: 'inset(0px 0px 0px 0px round 0px)',
+    duration: 0.6,
+    ease: 'power2.inOut',
+    onComplete: () => {
+      if (proj.url) {
+        window.location.href = proj.url;
+        return;
+      }
+      gsap.to([title, date, back], {
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    }
+  });
+}
+
+function closeProject() {
+  const page   = document.getElementById('projectPage');
+  const cover  = document.getElementById('projectCoverImg');
+  const cardEl = activeProjectCard;
+  const title  = document.getElementById('projectTitle');
+  const date   = document.getElementById('projectDate');
+  const back   = document.getElementById('projectBack');
+
+  gsap.to([title, date, back], {
+    opacity: 0, duration: 0.15, ease: 'power2.in'
+  });
+
+  if (!cardEl) {
+    gsap.to(page, { opacity: 0, duration: 0.3,
+      onComplete: () => { page.style.pointerEvents = 'none'; }
+    });
+    return;
+  }
+
+  const rect = cardEl.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const t = Math.round(rect.top);
+  const l = Math.round(rect.left);
+  const r = Math.round(vw - rect.right);
+  const b = Math.round(vh - rect.bottom);
+
+  gsap.to(cover, {
+    clipPath: `inset(${t}px ${r}px ${b}px ${l}px round 20px)`,
+    duration: 0.5,
+    ease: 'power2.inOut',
+    delay: 0.1,
+    onComplete: () => {
+      page.style.opacity = '0';
+      page.style.pointerEvents = 'none';
+      gsap.set(cover, { clipPath: 'none' });
+      activeProjectCard = null;
+    }
+  });
+}
 
 // ────────────────────────────────────────────────────────────
 // BUTTON WIRING
@@ -1569,6 +1796,7 @@ function showCarouselHint() {
 // ────────────────────────────────────────────────────────────
 gsap.set(hubEl, { opacity: 0, pointerEvents: 'none' });
 buildCarousel();
+document.getElementById('projectBack').addEventListener('click', closeProject);
 </script>
 </body>
 </html>
