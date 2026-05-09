@@ -110,6 +110,20 @@
       background: transparent;
     }
 
+    /* ─── ASCII ELEVATION ─── */
+    .ascii-art {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: clamp(6px, 0.85vw, 10.5px);
+      line-height: 1.25;
+      color: rgba(17, 17, 17, 0.55);
+      white-space: pre;
+      letter-spacing: 0;
+      user-select: none;
+      pointer-events: none;
+      margin: 0;
+      padding: 0;
+    }
+
     /* About / Contact link on Entry */
     .entry-about {
       position: absolute;
@@ -326,7 +340,7 @@
 
     .info-up {
       position: absolute;
-      top: 32px;
+      bottom: 32px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -573,6 +587,24 @@
      ENTRY PAGE
 ══════════════════════════════════════════ -->
 <section id="entry" aria-label="Entry">
+
+<pre class="ascii-art" aria-hidden="true">
+          __
+     _   |  |___                                                                  /\
+    | |  |      |__                                                               /  \    /\
+    |_|  |    _    |__                           |          |                   _/    \__/  \
+    |    |   | |      |___       ___           _/|   _   _  |\_               /  [__]   [__] \
+    |    |   |_|   ___   |_____/   |__        / _|__| | | |__\_\            _/  [__]   [  ]  \
+    |    |    |   |   \__|     |     |_______/ / |    |_|_|    |\_         /    [  ]   [__]    \
+    |    |    |___|   |        |  ___|       |  |              |   \______/                      \
+    |    |___|        |________|_|     _     |  |______________|    |   ~~~~~~~~~~~~~~~~~~~~~~~~~ \
+    |___|             |         |     | |    |                       |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                      |_________|     |_|    |_______________________|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ==========================================|               |===========================================
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~
+</pre>
+
   <button class="entry-about" id="entryAboutBtn" aria-label="Go to About and Contact">
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
       <path d="M9 14.5v-11M9 3.5l-4.5 4.5M9 3.5l4.5 4.5"
@@ -590,11 +622,6 @@
      GALLERY HUB
 ══════════════════════════════════════════ -->
 <section id="hub" class="view" aria-label="Gallery hub">
-  <button class="hub-back" id="hubBackBtn" aria-label="Back to entry">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
 
   <div class="carousel-wrap" id="carouselWrap"
        role="region" aria-label="Project gallery — drag or use arrow keys to browse">
@@ -749,7 +776,6 @@ const entryEl       = document.getElementById('entry');
 const hubEl         = document.getElementById('hub');
 const infoEl        = document.getElementById('info');
 const entryAboutBtn = document.getElementById('entryAboutBtn');
-const hubBackBtn    = document.getElementById('hubBackBtn');
 const carouselWrap  = document.getElementById('carouselWrap');
 const carouselRing  = document.getElementById('carouselRing');
 const infoUp        = document.getElementById('infoUp');
@@ -1119,7 +1145,18 @@ carouselWrap.addEventListener('touchend', () => {
 // WHEEL — hub guard + Entry/Info physical scroll
 // ────────────────────────────────────────────────────────────
 window.addEventListener('wheel', (e) => {
-  if (view === 'hub') { e.preventDefault(); return; }
+  if (view === 'hub') {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      view = 'entry';
+      outers.forEach(o => { o.style.pointerEvents = 'none'; });
+      if (snapTween) snapTween.kill();
+      scrollVelocity += e.deltaY * 0.000085;
+      scrollVelocity = Math.max(-0.022, Math.min(0.022, scrollVelocity));
+      startScrollLoop();
+    }
+    return;
+  }
   if (isTransitioning) { e.preventDefault(); return; }
   if (view !== 'entry' && view !== 'info') return;
   e.preventDefault();
@@ -1132,13 +1169,27 @@ window.addEventListener('wheel', (e) => {
 // TOUCH — Entry/Info physical scroll
 // ────────────────────────────────────────────────────────────
 window.addEventListener('touchstart', (e) => {
-  if (view !== 'entry' && view !== 'info') return;
-  scrollTouchStartY = e.touches[0].clientY;
+  if (view === 'hub' || view === 'entry' || view === 'info') {
+    scrollTouchStartY = e.touches[0].clientY;
+  }
 }, { passive: true });
 
 window.addEventListener('touchmove', (e) => {
   if (isTransitioning) { e.preventDefault(); return; }
-  if (view === 'hub') return;
+  if (view === 'hub') {
+    const dy = scrollTouchStartY - e.touches[0].clientY;
+    scrollTouchStartY = e.touches[0].clientY;
+    if (dy > 0) { // swipe up = same direction that brought gallery in, reversed
+      view = 'entry';
+      outers.forEach(o => { o.style.pointerEvents = 'none'; });
+      if (snapTween) snapTween.kill();
+      scrollVelocity -= dy * 0.00012;
+      scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
+      startScrollLoop();
+    }
+    e.preventDefault();
+    return;
+  }
   if (view !== 'entry' && view !== 'info') return;
   const dy = scrollTouchStartY - e.touches[0].clientY;
   scrollTouchStartY = e.touches[0].clientY;
@@ -1154,6 +1205,7 @@ window.addEventListener('touchmove', (e) => {
 function applyScrollState(p) {
   const pClamped = Math.min(1, p);          // 0–1 for info/entry range
   const q = 1 - pClamped;                  // q=0 at entry, q=1 at info
+  const hubT = Math.max(0, Math.min(1, p - 1)); // 0→1 during gallery reveal
 
   // A: Move scroll track (only for info/entry range)
   scrollTrack.style.transform = `translateY(${-pClamped * 100}vh)`;
@@ -1164,8 +1216,10 @@ function applyScrollState(p) {
   const b = Math.round(245 + (12  - 245) * q);
   bgLayer.style.backgroundColor = `rgb(${r},${g},${b})`;
 
-  // C: About arrow fades only when scrolling down toward gallery
-  entryAboutBtn.style.opacity = String(Math.max(0, 1 - hubT * 5));
+  // C: About arrow — locked in place when scrolling down, then slides off top and fades
+  const exitT = Math.max(0, Math.min(1, (hubT - 0.12) / 0.22));
+  entryAboutBtn.style.opacity   = String(1 - exitT);
+  entryAboutBtn.style.transform = `translateX(-50%) translateY(${-exitT * 100}px)`;
 
   // D: Info back arrow fades in when fully on info page
   const infoUpEl = document.getElementById('infoUp');
@@ -1176,10 +1230,10 @@ function applyScrollState(p) {
   }
 
   // E: Hub slides up from bottom as p goes from 1 → 2
-  const hubT = Math.max(0, Math.min(1, p - 1)); // 0→1 during gallery reveal
   hubEl.style.transform    = `translateY(${(1 - hubT) * 100}vh)`;
   hubEl.style.opacity      = hubT > 0 ? '1' : '0';
   hubEl.style.pointerEvents = p >= 2 ? 'auto' : 'none';
+  if (p >= 2 && view !== 'hub') view = 'hub';
 
   // F: Ring angle is a direct function of hubT — always lands on Project 1 at hubT=1
   if (hubT > 0 && view !== 'hub') {
@@ -1217,7 +1271,6 @@ function scrollLoop() {
 function snapTo(target) {
   cancelAnimationFrame(scrollRaf);
   scrollRaf = null;
-  ringVelocity = 0;
 
   const pObj = { p: scrollProgress };
   gsap.to(pObj, {
@@ -1267,6 +1320,7 @@ carouselWrap.addEventListener('keydown', (e) => {
 // ────────────────────────────────────────────────────────────
 function triggerToEntry_fromHub() {
   if (view !== 'hub') return;
+  view = 'entry'; // guard against repeated calls during scroll/swipe
   if (snapTween) snapTween.kill();
   outers.forEach(o => { o.style.pointerEvents = 'none'; });
   snapTo(1);
@@ -1472,7 +1526,6 @@ entryAboutBtn.addEventListener('click', () => {
   });
 });
 
-hubBackBtn.addEventListener('click', triggerToEntry_fromHub);
 
 infoUp.addEventListener('click', () => {
   gsap.to({ p: scrollProgress }, {
