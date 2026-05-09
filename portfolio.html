@@ -71,7 +71,7 @@
       position: fixed;
       top: 24px;
       right: 32px;
-      z-index: 10;
+      z-index: 60;
       height: 56px;
       width: auto;
       display: block;
@@ -110,51 +110,10 @@
       background: transparent;
     }
 
-    /* Enter button — bezel card style */
-    .enter-btn {
-      font-family: var(--font-display);
-      font-size: var(--text-xl);
-      font-weight: 400;
-      color: #111111;
-      background: #f5f4f0;
-      border: 1px solid rgba(0,0,0,0.10);
-      border-radius: 20px;
-      cursor: pointer;
-      letter-spacing: 0.04em;
-      width: 160px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow:
-        0 2px 8px rgba(0,0,0,0.10),
-        0 8px 24px rgba(0,0,0,0.08),
-        inset 0 1px 0 rgba(255,255,255,0.8);
-      transition:
-        transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-        box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .enter-btn:hover {
-      transform: translateY(-2px);
-      box-shadow:
-        0 4px 16px rgba(0,0,0,0.13),
-        0 12px 36px rgba(0,0,0,0.10),
-        inset 0 1px 0 rgba(255,255,255,0.8);
-    }
-
-    .enter-btn:active {
-      transform: translateY(1px);
-      box-shadow:
-        0 1px 4px rgba(0,0,0,0.08),
-        0 2px 8px rgba(0,0,0,0.06),
-        inset 0 1px 0 rgba(255,255,255,0.6);
-    }
-
     /* About / Contact link on Entry */
     .entry-about {
       position: absolute;
-      bottom: 32px;
+      top: 32px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -171,7 +130,7 @@
     }
 
     .entry-about svg {
-      animation: bob 2s ease-in-out infinite;
+      animation: bob-up 2s ease-in-out infinite;
     }
 
     .entry-about-text {
@@ -195,6 +154,7 @@
       overflow: hidden;
       opacity: 0;
       pointer-events: none;
+      background: #f8f7f5;
     }
 
     /* Hub back arrow */
@@ -393,7 +353,7 @@
     }
 
     .info-up svg {
-      animation: bob-up 2s ease-in-out infinite;
+      animation: bob 2s ease-in-out infinite;
     }
 
     @keyframes bob-up {
@@ -499,85 +459,6 @@
 
     .info-link:hover { opacity: 1; }
 
-    /* ─── OVERLAY ─── */
-    #overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      background: rgba(0,0,0,0.78);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    #overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .overlay-panel {
-      background: #181715;
-      border-radius: var(--radius-xl);
-      width: min(580px, calc(100vw - 48px));
-      max-height: calc(100dvh - 80px);
-      overflow-y: auto;
-      padding: 48px;
-      position: relative;
-      color: #e8e5df;
-    }
-
-    .overlay-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      color: #e8e5df;
-      opacity: 0.4;
-      cursor: pointer;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: opacity 0.2s ease;
-    }
-
-    .overlay-close:hover { opacity: 1; }
-
-    .overlay-meta {
-      font-family: var(--font-ui);
-      font-size: var(--text-sm);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #e8e5df;
-      opacity: 0.36;
-      margin-bottom: 12px;
-    }
-
-    .overlay-title {
-      font-family: var(--font-display);
-      font-size: var(--text-3xl);
-      font-weight: 400;
-      color: #e8e5df;
-      margin-bottom: 28px;
-      line-height: 1.15;
-    }
-
-    .overlay-body {
-      font-family: var(--font-ui);
-      font-size: var(--text-base);
-      line-height: 1.82;
-      color: #e8e5df;
-      opacity: 0.65;
-    }
-
     /* ─── CAROUSEL HINT ─── */
     .carousel-hint {
       position: absolute;
@@ -637,32 +518,15 @@
 <div id="scrollTrack">
 
 <!-- ══════════════════════════════════════════
-     ENTRY PAGE
-══════════════════════════════════════════ -->
-<section id="entry" aria-label="Entry">
-  <button class="enter-btn" id="enterBtn" aria-label="Enter portfolio">
-    Enter
-  </button>
-
-  <button class="entry-about" id="entryAboutBtn" aria-label="Go to About and Contact">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-      <path d="M9 3.5v11M9 14.5l-4.5-4.5M9 14.5l4.5-4.5"
-            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span class="entry-about-text">About / Contact</span>
-  </button>
-</section>
-
-<!-- ══════════════════════════════════════════
      INFO PAGE
 ══════════════════════════════════════════ -->
 <section id="info" aria-label="About and contact">
   <button class="info-up" id="infoUp" aria-label="Return to entry">
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-      <path d="M9 14.5v-11M9 3.5l-4.5 4.5M9 3.5l4.5 4.5"
+      <path d="M9 3.5v11M9 14.5l-4.5-4.5M9 14.5l4.5-4.5"
             stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <span class="info-up-text">Back to top</span>
+    <span class="info-up-text">Back</span>
   </button>
 
   <!-- Zone 1 — Bio Block -->
@@ -705,15 +569,27 @@
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════
+     ENTRY PAGE
+══════════════════════════════════════════ -->
+<section id="entry" aria-label="Entry">
+  <button class="entry-about" id="entryAboutBtn" aria-label="Go to About and Contact">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M9 14.5v-11M9 3.5l-4.5 4.5M9 3.5l4.5 4.5"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="entry-about-text">About / Contact</span>
+  </button>
+</section>
+
+
 </div><!-- /scrollTrack -->
 </div><!-- /scrollCanvas -->
 
 <!-- ══════════════════════════════════════════
      GALLERY HUB
 ══════════════════════════════════════════ -->
-<section id="hub" class="view white-room" aria-label="Gallery hub">
-  <img class="site-logo" src="assets/logo.png" alt="AW Design" />
-
+<section id="hub" class="view" aria-label="Gallery hub">
   <button class="hub-back" id="hubBackBtn" aria-label="Back to entry">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
       <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -742,18 +618,6 @@
 <!-- ══════════════════════════════════════════
      PROJECT OVERLAY
 ══════════════════════════════════════════ -->
-<div id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
-  <div class="overlay-panel">
-    <button class="overlay-close" id="overlayClose" aria-label="Close project">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </button>
-    <p class="overlay-meta" id="overlayMeta"></p>
-    <h2 class="overlay-title" id="overlayTitle"></h2>
-    <p class="overlay-body" id="overlayBody"></p>
-  </div>
-</div>
 
 <section id="projectPage" aria-label="Project page"
   style="position:fixed;inset:0;z-index:300;pointer-events:none;opacity:0;overflow:hidden;">
@@ -836,13 +700,6 @@ const PROJECTS = [
   { name: 'Project Five',  seed: 'studio5',   cover: null,                  type: 'Research',      year: '2022' },
 ];
 
-const OVERLAY_BODY =
-  'This project investigates the tension between mass and void — how the subtraction ' +
-  'of material can create as much meaning as its addition. Working within a constrained ' +
-  'site, the proposal negotiates between existing urban grain and the desire for a new ' +
-  'kind of publicness. Structural logic is made visible throughout, forming the primary ' +
-  'aesthetic language of the work.';
-
 // ────────────────────────────────────────────────────────────
 // CONFIG
 // ────────────────────────────────────────────────────────────
@@ -867,7 +724,7 @@ let touchStartY = 0;
 let touchDir    = null;
 
 // Scroll-driven Entry ↔ Info
-let scrollProgress    = 0;
+let scrollProgress    = 1;
 let scrollVelocity    = 0;
 let scrollRaf         = null;
 let scrollTouchStartY = 0;
@@ -891,19 +748,14 @@ const scrollTrack   = document.getElementById('scrollTrack');
 const entryEl       = document.getElementById('entry');
 const hubEl         = document.getElementById('hub');
 const infoEl        = document.getElementById('info');
-const enterBtn      = document.getElementById('enterBtn');
 const entryAboutBtn = document.getElementById('entryAboutBtn');
 const hubBackBtn    = document.getElementById('hubBackBtn');
 const carouselWrap  = document.getElementById('carouselWrap');
 const carouselRing  = document.getElementById('carouselRing');
 const infoUp        = document.getElementById('infoUp');
-const overlayEl     = document.getElementById('overlay');
-const overlayClose  = document.getElementById('overlayClose');
-const overlayTitle  = document.getElementById('overlayTitle');
-const overlayMeta   = document.getElementById('overlayMeta');
-const overlayBody   = document.getElementById('overlayBody');
-
 const outers = [], tilts = [], shines = [];
+
+const REVEAL_SPIN = -120; // ring starts 120° off and arrives at Project 1 (angle=0) when fully revealed
 
 // ────────────────────────────────────────────────────────────
 // AUDIO
@@ -998,17 +850,8 @@ function buildCarousel() {
     card.addEventListener('pointerup', () => {
       if (isDragging) return;
       const na = normAngle(i * CARD_STEP - angle);
-      if (Math.abs(na) < CARD_STEP * 0.55) {
-        openOverlay(proj);
-      } else {
+      if (Math.abs(na) >= CARD_STEP * 0.55) {
         snapToIndex(i);
-      }
-    });
-
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openOverlay(proj);
       }
     });
 
@@ -1299,7 +1142,7 @@ window.addEventListener('touchmove', (e) => {
   if (view !== 'entry' && view !== 'info') return;
   const dy = scrollTouchStartY - e.touches[0].clientY;
   scrollTouchStartY = e.touches[0].clientY;
-  scrollVelocity += dy * 0.00012;
+  scrollVelocity -= dy * 0.00012;
   scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
   startScrollLoop();
   e.preventDefault();
@@ -1309,28 +1152,39 @@ window.addEventListener('touchmove', (e) => {
 // SCROLL-DRIVEN ENTRY ↔ INFO (physical track)
 // ────────────────────────────────────────────────────────────
 function applyScrollState(p) {
-  // A: Move scroll track
-  scrollTrack.style.transform = `translateY(${-p * 100}vh)`;
+  const pClamped = Math.min(1, p);          // 0–1 for info/entry range
+  const q = 1 - pClamped;                  // q=0 at entry, q=1 at info
 
-  // B: Drive the fixed underlay — single source of background color
-  const r = Math.round(248 + (14  - 248) * p);
-  const g = Math.round(247 + (13  - 247) * p);
-  const b = Math.round(245 + (12  - 245) * p);
+  // A: Move scroll track (only for info/entry range)
+  scrollTrack.style.transform = `translateY(${-pClamped * 100}vh)`;
+
+  // B: Background: light at entry (q=0), dark at info (q=1)
+  const r = Math.round(248 + (14  - 248) * q);
+  const g = Math.round(247 + (13  - 247) * q);
+  const b = Math.round(245 + (12  - 245) * q);
   bgLayer.style.backgroundColor = `rgb(${r},${g},${b})`;
 
-  // C: Enter button rises and fades
-  enterBtn.style.transform = `translateY(${-p * 60}px)`;
-  enterBtn.style.opacity   = String(Math.max(0, 1 - p * 2));
+  // C: About arrow fades only when scrolling down toward gallery
+  entryAboutBtn.style.opacity = String(Math.max(0, 1 - hubT * 5));
 
-  // D: About arrow fades out
-  entryAboutBtn.style.opacity = String(Math.max(0, 1 - p * 2.5));
-
-  // E: Info up arrow fades in only when near fully scrolled
+  // D: Info back arrow fades in when fully on info page
   const infoUpEl = document.getElementById('infoUp');
   if (infoUpEl) {
-    const arrowOpacity = Math.max(0, (p - 0.9) / 0.1);
+    const arrowOpacity = Math.max(0, (q - 0.9) / 0.1);
     infoUpEl.style.opacity = arrowOpacity;
     infoUpEl.style.pointerEvents = arrowOpacity > 0.05 ? 'auto' : 'none';
+  }
+
+  // E: Hub slides up from bottom as p goes from 1 → 2
+  const hubT = Math.max(0, Math.min(1, p - 1)); // 0→1 during gallery reveal
+  hubEl.style.transform    = `translateY(${(1 - hubT) * 100}vh)`;
+  hubEl.style.opacity      = hubT > 0 ? '1' : '0';
+  hubEl.style.pointerEvents = p >= 2 ? 'auto' : 'none';
+
+  // F: Ring angle is a direct function of hubT — always lands on Project 1 at hubT=1
+  if (hubT > 0 && view !== 'hub') {
+    angle = REVEAL_SPIN * (1 - hubT); // -120° at start → 0° (Project 1) when fully in
+    updateRing();
   }
 }
 
@@ -1342,14 +1196,19 @@ function startScrollLoop() {
 function scrollLoop() {
   scrollProgress += scrollVelocity;
   scrollVelocity *= 0.96;
-  scrollProgress = Math.max(0, Math.min(1, scrollProgress));
-  applyScrollState(scrollProgress);
+  scrollProgress = Math.max(0, Math.min(2, scrollProgress));
+  applyScrollState(scrollProgress); // also drives ring via position mapping
 
   if (Math.abs(scrollVelocity) < 0.00003) {
     scrollRaf = null;
-    if (scrollProgress >= 0.95) view = 'info';
-    else if (scrollProgress <= 0.05) view = 'entry';
-    else view = 'entry';
+    if (scrollProgress <= 0.05) {
+      view = 'info';
+    } else if (scrollProgress > 1.05) {
+      if (scrollProgress >= 1.5) snapTo(2);
+      else                        snapTo(1);
+    } else {
+      view = 'entry';
+    }
     return;
   }
   scrollRaf = requestAnimationFrame(scrollLoop);
@@ -1358,19 +1217,31 @@ function scrollLoop() {
 function snapTo(target) {
   cancelAnimationFrame(scrollRaf);
   scrollRaf = null;
-  const obj = { p: scrollProgress };
-  gsap.to(obj, {
+  ringVelocity = 0;
+
+  const pObj = { p: scrollProgress };
+  gsap.to(pObj, {
     p: target,
-    duration: 0.55,
+    duration: 0.65,
     ease: 'power3.out',
     onUpdate() {
-      scrollProgress = obj.p;
+      scrollProgress = pObj.p;
       applyScrollState(scrollProgress);
     },
     onComplete() {
-      view = target === 1 ? 'info' : 'entry';
+      if (target === 0) {
+        view = 'info';
+      } else if (target === 1) {
+        view = 'entry';
+        isTransitioning = false;
+        outers.forEach(o => { o.style.pointerEvents = ''; });
+      } else {
+        view = 'hub';
+        gsap.delayedCall(0.5, showCarouselHint);
+      }
     },
   });
+
 }
 
 // ────────────────────────────────────────────────────────────
@@ -1394,148 +1265,22 @@ carouselWrap.addEventListener('keydown', (e) => {
 // ────────────────────────────────────────────────────────────
 // VIEW TRANSITIONS
 // ────────────────────────────────────────────────────────────
-function triggerToHub_fromEntry() {
-  if (view !== 'entry') return;
-  view = 'hub';
-  isTransitioning = true;
-
-  // Ensure scroll track is at entry position before showing hub
-  scrollProgress = 0;
-  applyScrollState(0);
-
-  if (prefersReducedMotion) {
-    gsap.set(hubEl,        { opacity: 1, pointerEvents: 'auto' });
-    gsap.set(carouselWrap, { y: 0, opacity: 1 });
-    isTransitioning = false;
-    updateRing();
-    return;
-  }
-
-  // Pre-calculate card dimensions while hub is invisible
-  resizeCards();
-  updateRing();
-
-  gsap.set(hubEl, { opacity: 0, pointerEvents: 'auto' });
-
-  const dropStart = -window.innerHeight * 1.1;
-  gsap.set(carouselWrap, { y: dropStart, opacity: 0 });
-
-  const finalAngle = angle;
-  angle = finalAngle + 180;
-  updateRing();
-
-  // t=0: Fade out buttons
-  gsap.to([enterBtn, entryAboutBtn], {
-    opacity: 0,
-    duration: 0.31,
-    ease: 'power2.out',
-    onComplete() {
-      // Hub snaps visible — covers scroll canvas underneath
-      gsap.set(hubEl, { opacity: 1 });
-
-      // t=0.31: Carousel drops
-      gsap.to(carouselWrap, {
-        y: 0,
-        opacity: 1,
-        duration: 1.375,
-        ease: 'expo.out',
-      });
-
-      // t=0.31: Spin 180deg via proxy
-      const proxy = { v: angle };
-      gsap.to(proxy, {
-        v: finalAngle,
-        duration: 1.375,
-        ease: 'expo.out',
-        onUpdate() { angle = proxy.v; updateRing(); },
-        onComplete() { isTransitioning = false; showCarouselHint(); },
-      });
-    },
-  });
-}
-
 function triggerToEntry_fromHub() {
   if (view !== 'hub') return;
-  outers.forEach(o => { o.style.pointerEvents = 'none'; });
-  isTransitioning = true;
   if (snapTween) snapTween.kill();
-
-  const riseEnd = -window.innerHeight * 1.1;
-
-  if (prefersReducedMotion) {
-    view = 'entry';
-    hubEl.style.opacity = '0';
-    hubEl.style.pointerEvents = 'none';
-    gsap.set(carouselWrap, { y: riseEnd, opacity: 0 });
-    enterBtn.style.transform = '';
-    gsap.set([enterBtn, entryAboutBtn], { opacity: 1 });
-    scrollProgress = 0;
-    applyScrollState(0);
-    isTransitioning = false;
-    return;
-  }
-
-  // t=0: Carousel rises
-  gsap.to(carouselWrap, {
-    y: riseEnd,
-    opacity: 0,
-    duration: 1.375,
-    ease: 'expo.in',
-  });
-
-  // t=0: Spin 180deg via proxy
-  const startAngle = angle;
-  const proxy = { v: startAngle };
-  gsap.to(proxy, {
-    v: startAngle + 180,
-    duration: 1.375,
-    ease: 'expo.in',
-    onUpdate() { angle = proxy.v; updateRing(); },
-    onComplete() {
-      view = 'entry';
-      hubEl.style.opacity = '0';
-      hubEl.style.pointerEvents = 'none';
-      gsap.set(carouselWrap, { y: riseEnd, opacity: 0 });
-      isTransitioning = false;
-    },
-  });
-
-  // t=0: Hub fades out — scroll canvas underneath is revealed
-  gsap.to(hubEl, {
-    opacity: 0,
-    duration: 0.625,
-    ease: 'power2.inOut',
-  });
-
-  // t=0.625: Restore scroll track to entry, restore buttons
-  gsap.delayedCall(0.625, () => {
-    scrollProgress = 0;
-    applyScrollState(0);
-    enterBtn.style.transform = '';
-  });
-
-  gsap.to([enterBtn, entryAboutBtn], {
-    opacity: 1,
-    duration: 0.31,
-    ease: 'power2.out',
-    delay: 0.625,
-  });
+  outers.forEach(o => { o.style.pointerEvents = 'none'; });
+  snapTo(1);
 }
 
 function triggerToInfo_fromEntry() {
   if (view !== 'entry') return;
-  // Animate scroll track to info position
-  snapTo(1);
+  snapTo(0);
 }
 
 function triggerToEntry_fromInfo() {
   if (view !== 'info') return;
-  // Reset button inline styles immediately so they restore correctly
-  enterBtn.style.transform    = '';
-  enterBtn.style.opacity      = '1';
   entryAboutBtn.style.opacity = '1';
-  // Animate scroll track back to entry position
-  snapTo(0);
+  snapTo(1);
 }
 
 // ────────────────────────────────────────────────────────────
@@ -1611,29 +1356,6 @@ function sampleImageColor(img) {
     return 'rgb(180,175,165)';
   }
 }
-
-// ────────────────────────────────────────────────────────────
-// OVERLAY
-// ────────────────────────────────────────────────────────────
-function openOverlay(proj) {
-  overlayTitle.textContent = proj.name;
-  overlayMeta.textContent  = `${proj.type} · ${proj.year}`;
-  overlayBody.textContent  = OVERLAY_BODY;
-  overlayEl.classList.add('open');
-  overlayClose.focus();
-}
-
-function closeOverlay() {
-  overlayEl.classList.remove('open');
-}
-
-overlayClose.addEventListener('click', closeOverlay);
-overlayEl.addEventListener('click', (e) => {
-  if (e.target === overlayEl) closeOverlay();
-});
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && overlayEl.classList.contains('open')) closeOverlay();
-});
 
 // ────────────────────────────────────────────────────────────
 // PROJECT PAGE
@@ -1736,16 +1458,10 @@ function closeProject() {
 // ────────────────────────────────────────────────────────────
 // BUTTON WIRING
 // ────────────────────────────────────────────────────────────
-enterBtn.addEventListener('mousedown', playEnterSound);
-enterBtn.addEventListener('click', triggerToHub_fromEntry);
-enterBtn.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerToHub_fromEntry(); }
-});
-
 entryAboutBtn.addEventListener('click', () => {
   if (isTransitioning) return;
   gsap.to({ p: scrollProgress }, {
-    p: 1,
+    p: 0,
     duration: 1.1,
     ease: 'power2.inOut',
     onUpdate: function() {
@@ -1760,7 +1476,7 @@ hubBackBtn.addEventListener('click', triggerToEntry_fromHub);
 
 infoUp.addEventListener('click', () => {
   gsap.to({ p: scrollProgress }, {
-    p: 0,
+    p: 1,
     duration: 1.1,
     ease: 'power2.inOut',
     onUpdate: function() {
@@ -1769,8 +1485,6 @@ infoUp.addEventListener('click', () => {
     },
     onComplete: () => {
       view = 'entry';
-      enterBtn.style.opacity = '1';
-      enterBtn.style.transform = '';
       entryAboutBtn.style.opacity = '1';
     },
   });
@@ -1794,8 +1508,10 @@ function showCarouselHint() {
 // ────────────────────────────────────────────────────────────
 // INIT
 // ────────────────────────────────────────────────────────────
-gsap.set(hubEl, { opacity: 0, pointerEvents: 'none' });
+applyScrollState(scrollProgress);
 buildCarousel();
+resizeCards();
+updateRing();
 document.getElementById('projectBack').addEventListener('click', closeProject);
 </script>
 </body>
