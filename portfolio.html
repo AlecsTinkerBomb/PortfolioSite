@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio</title>
+  <script>if(sessionStorage.getItem('returnFromProject'))document.documentElement.style.opacity='0';</script>
   <link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
   <style>
@@ -26,7 +27,7 @@
 
     body {
       font-family: var(--font-ui);
-      background: #f8f7f5;
+      background: #111111;
       color: #111111;
       height: 100%;
       overflow: hidden;
@@ -48,7 +49,7 @@
       height: 100%;
     }
 
-    /* ─── SCROLL CANVAS — Entry + Info continuous ─── */
+    /* ─── SCROLL CANVAS — Entry ─── */
     #scrollCanvas {
       position: fixed;
       inset: 0;
@@ -61,7 +62,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 200vh;
+      height: 100vh;
       will-change: transform;
       background: transparent;
     }
@@ -97,7 +98,55 @@
       position: fixed;
       inset: 0;
       z-index: -1;
-      background: #f8f7f5;
+      background: #111111;
+    }
+
+    /* ─── ENTRY SKYLINE ─── */
+    .entry-skyline {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+      display: block;
+      z-index: 1;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ─── ENTRY ASCII ─── */
+    .entry-ascii {
+      position: absolute;
+      top: 32px;
+      left: 36px;
+      z-index: 2;
+      white-space: pre;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: clamp(4px, 1.65vw, 15px);
+      line-height: 1.15;
+      color: #ffffff;
+      letter-spacing: 0;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ─── ENTRY PLANE ─── */
+    .entry-plane {
+      position: fixed;
+      z-index: 3;
+      white-space: pre;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: clamp(8px, 1.6vw, 15px);
+      line-height: 1.2;
+      color: #ffffff;
+      letter-spacing: 0;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      opacity: 0;
+      left: 0;
     }
 
     /* ─── ENTRY ─── */
@@ -110,49 +159,6 @@
       background: transparent;
     }
 
-    /* ─── ASCII ELEVATION ─── */
-    .ascii-art {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: clamp(6px, 0.85vw, 10.5px);
-      line-height: 1.25;
-      color: rgba(17, 17, 17, 0.55);
-      white-space: pre;
-      letter-spacing: 0;
-      user-select: none;
-      pointer-events: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* About / Contact link on Entry */
-    .entry-about {
-      position: absolute;
-      top: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 7px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #999999;
-      padding: 8px 12px;
-      font-family: var(--font-ui);
-      z-index: 10;
-    }
-
-    .entry-about svg {
-      animation: bob-up 2s ease-in-out infinite;
-    }
-
-    .entry-about-text {
-      font-size: var(--text-sm);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #999999;
-    }
 
     @keyframes bob {
       0%, 100% { transform: translateY(0); }
@@ -326,8 +332,9 @@
 
     /* ─── INFO PAGE ─── */
     #info {
-      position: relative;
-      height: 100vh;
+      position: fixed;
+      inset: 0;
+      z-index: 60;
       background: transparent;
       display: flex;
       flex-direction: column;
@@ -336,11 +343,13 @@
       gap: 64px;
       padding: 80px 0;
       overflow-y: auto;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .info-up {
       position: absolute;
-      bottom: 32px;
+      top: 32px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -367,7 +376,7 @@
     }
 
     .info-up svg {
-      animation: bob 2s ease-in-out infinite;
+      animation: bob-up 2s ease-in-out infinite;
     }
 
     @keyframes bob-up {
@@ -501,7 +510,6 @@
 
     /* ─── REDUCED MOTION ─── */
     @media (prefers-reduced-motion: reduce) {
-      .entry-about svg,
       .info-up svg {
         animation: none;
       }
@@ -526,92 +534,27 @@
 <div id="bgLayer"></div>
 
 <!-- ══════════════════════════════════════════
-     SCROLL CANVAS — Entry + Info continuous
+     SCROLL CANVAS — Entry
 ══════════════════════════════════════════ -->
 <div id="scrollCanvas">
 <div id="scrollTrack">
 
 <!-- ══════════════════════════════════════════
-     INFO PAGE
-══════════════════════════════════════════ -->
-<section id="info" aria-label="About and contact">
-  <button class="info-up" id="infoUp" aria-label="Return to entry">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-      <path d="M9 3.5v11M9 14.5l-4.5-4.5M9 14.5l4.5-4.5"
-            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span class="info-up-text">Back</span>
-  </button>
-
-  <!-- Zone 1 — Bio Block -->
-  <div class="info-zone">
-    <div class="info-bio-block">
-      <div class="info-bio-left">
-        
-        <p class="info-bio-body">My name is Alec Wright, an undergraduate architecture student at the Fay Jones School of Architecture and Design, University of Arkansas.</p>
-        <p class="info-bio-body">I'm drawn to the idea that buildings are one of the few things humans make that outlast them. Since childhood, I've been pulled toward creating and building, taking something imagined and making it real. Architecture, to me, is the discipline where craft, detail, and meaning come together, and it's what I'm constantly pushing myself to get better at.</p>
-        <p class="info-bio-body">My work spans digital modeling, visualization, and design documentation built with Rhino 8, Revit, Lumion, Enscape, and the Adobe Creative Suite. This site documents my work as I move through the program, a running record of how my thinking and skills evolve.</p>
-      </div>
-      <div class="info-bio-right">
-        <img src="assets/aboutme2.jpg" alt="Alec Wright" />
-      </div>
-    </div>
-  </div>
-
-  <!-- Zone 2 — Contact -->
-  <div class="info-zone">
-    <div class="info-contact">
-      <p class="info-contact-eyebrow">Contact</p>
-      <div class="info-links">
-        <a href="mailto:aleccwright@gmail.com" class="info-link">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-            <rect x="1" y="2.5" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
-            <path d="M1 5l6.5 4.5L14 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-          </svg>
-          aleccwright@gmail.com
-        </a>
-        <a href="#" class="info-link">
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-            <rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="7.5" cy="7.5" r="2.8" stroke="currentColor" stroke-width="1.2"/>
-            <circle cx="11.2" cy="3.8" r="0.75" fill="currentColor"/>
-          </svg>
-          @alec_c_wright
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════
      ENTRY PAGE
 ══════════════════════════════════════════ -->
 <section id="entry" aria-label="Entry">
+  <pre class="entry-ascii" aria-label="Alec Wright Portfolio">    _    _     _____ ____   __        ______  ___ ____ _   _ _____
+   / \  | |   | ____/ ___|  \ \      / /  _ \|_ _/ ___| | | |_   _|
+  / _ \ | |   |  _|| |       \ \ /\ / /| |_) || | |  _| |_| | | |
+ / ___ \| |___| |__| |___     \ V  V / |  _ < | | |_| |  _  | | |
+/_/   \_\_____|_____\____|     \_/\_/  |_| \_\___\____|_| |_| |_|
 
-<pre class="ascii-art" aria-hidden="true">
-          __
-     _   |  |___                                                                  /\
-    | |  |      |__                                                               /  \    /\
-    |_|  |    _    |__                           |          |                   _/    \__/  \
-    |    |   | |      |___       ___           _/|   _   _  |\_               /  [__]   [__] \
-    |    |   |_|   ___   |_____/   |__        / _|__| | | |__\_\            _/  [__]   [  ]  \
-    |    |    |   |   \__|     |     |_______/ / |    |_|_|    |\_         /    [  ]   [__]    \
-    |    |    |___|   |        |  ___|       |  |              |   \______/                      \
-    |    |___|        |________|_|     _     |  |______________|    |   ~~~~~~~~~~~~~~~~~~~~~~~~~ \
-    |___|             |         |     | |    |                       |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                      |_________|     |_|    |_______________________|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ==========================================|               |===========================================
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~   ~~
-</pre>
-
-  <button class="entry-about" id="entryAboutBtn" aria-label="Go to About and Contact">
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-      <path d="M9 14.5v-11M9 3.5l-4.5 4.5M9 3.5l4.5 4.5"
-            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span class="entry-about-text">About / Contact</span>
-  </button>
+ ____   ___  ____ _____ _____ ___  _     ___ ___
+|  _ \ / _ \|  _ \_   _|  ___/ _ \| |   |_ _/ _ \
+| |_) | | | | |_) || | | |_ | | | | |    | | | | |
+|  __/| |_| |  _ < | | |  _|| |_| | |___ | | |_| |
+|_|    \___/|_| \_\|_| |_|   \___/|_____|___\___/</pre>
+  <img class="entry-skyline" src="assets/city skyline.jpg" alt="" aria-hidden="true" draggable="false" />
 </section>
 
 
@@ -641,6 +584,60 @@
     </svg>
   </div>
 </section>
+
+<!-- ══════════════════════════════════════════
+     INFO PAGE
+══════════════════════════════════════════ -->
+<section id="info" aria-label="About and contact">
+  <button class="info-up" id="infoUp" aria-label="Return to gallery">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M9 14.5v-11M9 3.5l-4.5 4.5M9 3.5l4.5 4.5"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="info-up-text">Back</span>
+  </button>
+
+  <!-- Zone 1 — Bio Block -->
+  <div class="info-zone">
+    <div class="info-bio-block">
+      <div class="info-bio-left">
+
+        <p class="info-bio-body">My name is Alec Wright, an undergraduate architecture student at the Fay Jones School of Architecture and Design, University of Arkansas.</p>
+        <p class="info-bio-body">I'm drawn to the idea that buildings are one of the few things humans make that outlast them. Since childhood, I've been pulled toward creating and building, taking something imagined and making it real. Architecture, to me, is the discipline where craft, detail, and meaning come together, and it's what I'm constantly pushing myself to get better at.</p>
+        <p class="info-bio-body">My work spans digital modeling, visualization, and design documentation built with Rhino 8, Revit, Lumion, Enscape, and the Adobe Creative Suite. This site documents my work as I move through the program, a running record of how my thinking and skills evolve.</p>
+      </div>
+      <div class="info-bio-right">
+        <img src="assets/aboutme.jpg" alt="Alec Wright" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone 2 — Contact -->
+  <div class="info-zone">
+    <div class="info-contact">
+      <p class="info-contact-eyebrow">Contact</p>
+      <div class="info-links">
+        <a href="mailto:aleccwright@gmail.com" class="info-link">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <rect x="1" y="2.5" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M1 5l6.5 4.5L14 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          aleccwright@gmail.com
+        </a>
+        <a href="#" class="info-link">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="7.5" cy="7.5" r="2.8" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="11.2" cy="3.8" r="0.75" fill="currentColor"/>
+          </svg>
+          @alec_c_wright
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<pre class="entry-plane" id="entryPlane" aria-hidden="true"></pre>
 
 <!-- ══════════════════════════════════════════
      PROJECT OVERLAY
@@ -720,9 +717,9 @@
 // DATA
 // ────────────────────────────────────────────────────────────
 const PROJECTS = [
-  { name: 'Project One',   seed: 'arch1',     cover: null,                  type: 'Architecture', year: '2024' },
-  { name: 'Project Two',   seed: 'build2',    cover: 'assets/P2cover.jpg',  type: 'Urban Design',  year: 'January – May 2025', url: 'project2.html' },
-  { name: 'Project Three', seed: 'design3',   cover: null,                  type: 'Interior',      year: '2023' },
+  { name: 'Project One',   seed: 'arch1',     cover: 'assets/p1cover.jpg',  type: 'Architecture', year: 'January – May 2025', url: 'project1.html' },
+  { name: 'Project Two',   seed: 'build2',    cover: 'assets/p2cover.jpeg', type: 'Urban Design',  year: '2025', url: 'project2.html' },
+  { name: 'Project Three', seed: 'design3',   cover: 'assets/p3cover.jpg',  type: 'Interior',      year: '2023', url: 'project3.html' },
   { name: 'Project Four',  seed: 'concrete4', cover: null,                  type: 'Installation',  year: '2023' },
   { name: 'Project Five',  seed: 'studio5',   cover: null,                  type: 'Research',      year: '2022' },
 ];
@@ -751,10 +748,12 @@ let touchStartY = 0;
 let touchDir    = null;
 
 // Scroll-driven Entry ↔ Info
-let scrollProgress    = 1;
+let scrollProgress    = 0;
 let scrollVelocity    = 0;
 let scrollRaf         = null;
 let scrollTouchStartY = 0;
+let galleryLocked     = false;
+let galleryLockTimer  = null;
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isTouchDevice = window.matchMedia('(hover: none)').matches;
@@ -775,10 +774,10 @@ const scrollTrack   = document.getElementById('scrollTrack');
 const entryEl       = document.getElementById('entry');
 const hubEl         = document.getElementById('hub');
 const infoEl        = document.getElementById('info');
-const entryAboutBtn = document.getElementById('entryAboutBtn');
 const carouselWrap  = document.getElementById('carouselWrap');
 const carouselRing  = document.getElementById('carouselRing');
 const infoUp        = document.getElementById('infoUp');
+const skylineEl     = document.querySelector('.entry-skyline');
 const outers = [], tilts = [], shines = [];
 
 const REVEAL_SPIN = -120; // ring starts 120° off and arrives at Project 1 (angle=0) when fully revealed
@@ -1145,12 +1144,21 @@ carouselWrap.addEventListener('touchend', () => {
 // WHEEL — hub guard + Entry/Info physical scroll
 // ────────────────────────────────────────────────────────────
 window.addEventListener('wheel', (e) => {
+  if (isTransitioning) { e.preventDefault(); return; }
   if (view === 'hub') {
     e.preventDefault();
     if (e.deltaY < 0) {
+      // scroll up → back to entry, always allowed
       view = 'entry';
       outers.forEach(o => { o.style.pointerEvents = 'none'; });
       if (snapTween) snapTween.kill();
+      galleryLocked = false;
+      clearTimeout(galleryLockTimer);
+      scrollVelocity += e.deltaY * 0.000085;
+      scrollVelocity = Math.max(-0.022, Math.min(0.022, scrollVelocity));
+      startScrollLoop();
+    } else if (!galleryLocked) {
+      // scroll down → only allowed after lock expires
       scrollVelocity += e.deltaY * 0.000085;
       scrollVelocity = Math.max(-0.022, Math.min(0.022, scrollVelocity));
       startScrollLoop();
@@ -1179,10 +1187,16 @@ window.addEventListener('touchmove', (e) => {
   if (view === 'hub') {
     const dy = scrollTouchStartY - e.touches[0].clientY;
     scrollTouchStartY = e.touches[0].clientY;
-    if (dy > 0) { // swipe up = same direction that brought gallery in, reversed
+    if (dy < 0 && !galleryLocked) { // swipe down from hub = go forward to info (only if unlocked)
+      scrollVelocity -= dy * 0.00012;
+      scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
+      startScrollLoop();
+    } else if (dy > 0) { // swipe up from hub = go back to entry, always allowed
       view = 'entry';
       outers.forEach(o => { o.style.pointerEvents = 'none'; });
       if (snapTween) snapTween.kill();
+      galleryLocked = false;
+      clearTimeout(galleryLockTimer);
       scrollVelocity -= dy * 0.00012;
       scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
       startScrollLoop();
@@ -1200,44 +1214,67 @@ window.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 // ────────────────────────────────────────────────────────────
-// SCROLL-DRIVEN ENTRY ↔ INFO (physical track)
+// SCROLL-DRIVEN ENTRY → HUB → INFO
+// p=0: entry, p=1: gallery hub fully in, p=2: info fully in
 // ────────────────────────────────────────────────────────────
 function applyScrollState(p) {
-  const pClamped = Math.min(1, p);          // 0–1 for info/entry range
-  const q = 1 - pClamped;                  // q=0 at entry, q=1 at info
-  const hubT = Math.max(0, Math.min(1, p - 1)); // 0→1 during gallery reveal
+  const hubT  = Math.max(0, Math.min(1, p));        // 0→1 as gallery slides in (p: 0→1)
+  const infoT = Math.max(0, Math.min(1, p - 1));    // 0→1 as info slides in (p: 1→2)
 
-  // A: Move scroll track (only for info/entry range)
-  scrollTrack.style.transform = `translateY(${-pClamped * 100}vh)`;
+  // A: Track stays static — entry is always at p=0, no physical track movement needed
 
-  // B: Background: light at entry (q=0), dark at info (q=1)
-  const r = Math.round(248 + (14  - 248) * q);
-  const g = Math.round(247 + (13  - 247) * q);
-  const b = Math.round(245 + (12  - 245) * q);
-  bgLayer.style.backgroundColor = `rgb(${r},${g},${b})`;
+  // B: Entry→Hub: bgLayer stays dark (hub's own white covers it).
+  //    Hub→Info: bgLayer transitions light→dark for the gradient reveal.
+  if (p <= 1) {
+    bgLayer.style.backgroundColor = '#111111';
+  } else {
+    const darkRatio = Math.max(0, Math.min(1, p - 1));
+    const r = Math.round(248 + (14  - 248) * darkRatio);
+    const g = Math.round(247 + (13  - 247) * darkRatio);
+    const b = Math.round(245 + (12  - 245) * darkRatio);
+    bgLayer.style.backgroundColor = `rgb(${r},${g},${b})`;
+  }
 
-  // C: About arrow — locked in place when scrolling down, then slides off top and fades
-  const exitT = Math.max(0, Math.min(1, (hubT - 0.12) / 0.22));
-  entryAboutBtn.style.opacity   = String(1 - exitT);
-  entryAboutBtn.style.transform = `translateX(-50%) translateY(${-exitT * 100}px)`;
+  // B2: Hide skyline once hub is fully in so it doesn't show through info
+  if (skylineEl) skylineEl.style.opacity = hubT < 1 ? '1' : '0';
 
-  // D: Info back arrow fades in when fully on info page
+  // C: Info back arrow fades in when fully on info page
   const infoUpEl = document.getElementById('infoUp');
   if (infoUpEl) {
-    const arrowOpacity = Math.max(0, (q - 0.9) / 0.1);
+    const arrowOpacity = Math.max(0, (infoT - 0.9) / 0.1);
     infoUpEl.style.opacity = arrowOpacity;
     infoUpEl.style.pointerEvents = arrowOpacity > 0.05 ? 'auto' : 'none';
   }
 
-  // E: Hub slides up from bottom as p goes from 1 → 2
-  hubEl.style.transform    = `translateY(${(1 - hubT) * 100}vh)`;
+  // E: Hub slides up from bottom (p: 0→1), exits upward off-screen (p: 1→2)
+  const hubTranslateY = p <= 1
+    ? (1 - hubT) * 100    // 100vh → 0 on entry
+    : -infoT * 100;       // 0 → -100vh on exit
+  hubEl.style.transform    = `translateY(${hubTranslateY}vh)`;
   hubEl.style.opacity      = hubT > 0 ? '1' : '0';
-  hubEl.style.pointerEvents = p >= 2 ? 'auto' : 'none';
-  if (p >= 2 && view !== 'hub') view = 'hub';
+  hubEl.style.pointerEvents = p >= 1 ? 'auto' : 'none';
+  if (p >= 1 && view !== 'hub' && view !== 'info') view = 'hub';
 
-  // F: Ring angle is a direct function of hubT — always lands on Project 1 at hubT=1
-  if (hubT > 0 && view !== 'hub') {
-    angle = REVEAL_SPIN * (1 - hubT); // -120° at start → 0° (Project 1) when fully in
+  // E2: Hub background darkens to match about me as it exits
+  if (p > 1) {
+    const darkRatio = Math.max(0, Math.min(1, p - 1));
+    const hr = Math.round(248 + (14  - 248) * darkRatio);
+    const hg = Math.round(247 + (13  - 247) * darkRatio);
+    const hb = Math.round(245 + (12  - 245) * darkRatio);
+    hubEl.style.backgroundColor = `rgb(${hr},${hg},${hb})`;
+  } else {
+    hubEl.style.backgroundColor = '#f8f7f5';
+  }
+
+  // F: Info slides up from bottom as p goes from 1 → 2
+  infoEl.style.transform    = `translateY(${(1 - infoT) * 100}vh)`;
+  infoEl.style.opacity      = infoT > 0 ? '1' : '0';
+  infoEl.style.pointerEvents = p >= 2 ? 'auto' : 'none';
+  if (p >= 2 && view !== 'info') view = 'info';
+
+  // G: Ring angle — spins in on entry only, no spin on exit
+  if (infoT === 0 && hubT > 0 && view !== 'hub') {
+    angle = REVEAL_SPIN * (1 - hubT);
     updateRing();
   }
 }
@@ -1248,15 +1285,40 @@ function startScrollLoop() {
 }
 
 function scrollLoop() {
+  const prev = scrollProgress;
   scrollProgress += scrollVelocity;
   scrollVelocity *= 0.96;
+
+  // Hard stop at p=1 (gallery) — intercept any crossing going forward
+  if (prev < 1 && scrollProgress >= 1 && !galleryLocked) {
+    scrollProgress = 1;
+    scrollVelocity = 0;
+    scrollRaf = null;
+    view = 'hub';
+    outers.forEach(o => { o.style.pointerEvents = ''; });
+    galleryLocked = true;
+    clearTimeout(galleryLockTimer);
+    galleryLockTimer = setTimeout(() => { galleryLocked = false; }, 1000);
+    showCarouselHint();
+    applyScrollState(1);
+    return;
+  }
+
+  // While locked, prevent scrollProgress from going past 1
+  if (galleryLocked && scrollProgress > 1) {
+    scrollProgress = 1;
+    scrollVelocity = Math.min(0, scrollVelocity);
+  }
+
   scrollProgress = Math.max(0, Math.min(2, scrollProgress));
-  applyScrollState(scrollProgress); // also drives ring via position mapping
+  applyScrollState(scrollProgress);
 
   if (Math.abs(scrollVelocity) < 0.00003) {
     scrollRaf = null;
     if (scrollProgress <= 0.05) {
-      view = 'info';
+      view = 'entry';
+    } else if (Math.abs(scrollProgress - 1) < 0.06) {
+      view = 'hub';
     } else if (scrollProgress > 1.05) {
       if (scrollProgress >= 1.5) snapTo(2);
       else                        snapTo(1);
@@ -1283,14 +1345,19 @@ function snapTo(target) {
     },
     onComplete() {
       if (target === 0) {
-        view = 'info';
-      } else if (target === 1) {
         view = 'entry';
         isTransitioning = false;
         outers.forEach(o => { o.style.pointerEvents = ''; });
-      } else {
+      } else if (target === 1) {
         view = 'hub';
-        gsap.delayedCall(0.5, showCarouselHint);
+        isTransitioning = false;
+        outers.forEach(o => { o.style.pointerEvents = ''; });
+        showCarouselHint();
+        galleryLocked = true;
+        clearTimeout(galleryLockTimer);
+        galleryLockTimer = setTimeout(() => { galleryLocked = false; }, 1000);
+      } else {
+        view = 'info';
       }
     },
   });
@@ -1320,20 +1387,21 @@ carouselWrap.addEventListener('keydown', (e) => {
 // ────────────────────────────────────────────────────────────
 function triggerToEntry_fromHub() {
   if (view !== 'hub') return;
-  view = 'entry'; // guard against repeated calls during scroll/swipe
+  view = 'entry';
   if (snapTween) snapTween.kill();
   outers.forEach(o => { o.style.pointerEvents = 'none'; });
-  snapTo(1);
+  galleryLocked = false;
+  clearTimeout(galleryLockTimer);
+  snapTo(0);
 }
 
 function triggerToInfo_fromEntry() {
   if (view !== 'entry') return;
-  snapTo(0);
+  snapTo(2);
 }
 
-function triggerToEntry_fromInfo() {
+function triggerToHub_fromInfo() {
   if (view !== 'info') return;
-  entryAboutBtn.style.opacity = '1';
   snapTo(1);
 }
 
@@ -1512,19 +1580,6 @@ function closeProject() {
 // ────────────────────────────────────────────────────────────
 // BUTTON WIRING
 // ────────────────────────────────────────────────────────────
-entryAboutBtn.addEventListener('click', () => {
-  if (isTransitioning) return;
-  gsap.to({ p: scrollProgress }, {
-    p: 0,
-    duration: 1.1,
-    ease: 'power2.inOut',
-    onUpdate: function() {
-      scrollProgress = this.targets()[0].p;
-      applyScrollState(scrollProgress);
-    },
-    onComplete: () => { view = 'info'; },
-  });
-});
 
 
 infoUp.addEventListener('click', () => {
@@ -1537,8 +1592,7 @@ infoUp.addEventListener('click', () => {
       applyScrollState(scrollProgress);
     },
     onComplete: () => {
-      view = 'entry';
-      entryAboutBtn.style.opacity = '1';
+      view = 'hub';
     },
   });
 });
@@ -1566,6 +1620,126 @@ buildCarousel();
 resizeCards();
 updateRing();
 document.getElementById('projectBack').addEventListener('click', closeProject);
+
+// ────────────────────────────────────────────────────────────
+// RETURN FROM PROJECT PAGE — gallery slides in from top
+// ────────────────────────────────────────────────────────────
+(function handleReturnFromProject() {
+  const raw = sessionStorage.getItem('returnFromProject');
+  if (!raw) return;
+  sessionStorage.removeItem('returnFromProject');
+
+  let projIdx;
+  try { projIdx = JSON.parse(raw).index; }
+  catch (e) { document.documentElement.style.opacity = ''; return; }
+
+  const proj = PROJECTS[projIdx];
+  if (!proj) { document.documentElement.style.opacity = ''; return; }
+
+  // White background
+  bgLayer.style.backgroundColor = '#ffffff';
+
+  // Set gallery state instantly at p=1
+  scrollProgress = 1;
+  applyScrollState(1);
+  view = 'hub';
+  isTransitioning = true;
+  galleryLocked = false;
+  outers.forEach(o => { o.style.pointerEvents = 'none'; });
+
+  // Correct card at front, ring offset so it spins into place
+  const TARGET_ANGLE = projIdx * CARD_STEP;
+  angle = TARGET_ANGLE + 120;
+  updateRing();
+
+  // Gallery starts above the viewport
+  hubEl.style.opacity = '1';
+  gsap.set(hubEl, { y: '-100vh' });
+
+  // Reveal page — white background, gallery about to slide in from top
+  document.documentElement.style.opacity = '';
+
+  const DUR = 1.5;
+  const EASE = 'power3.inOut';
+  const ringProxy = { a: angle };
+
+  // Gallery slides down from top
+  gsap.to(hubEl, { y: '0vh', duration: DUR, ease: EASE });
+
+  // Ring spins into correct position simultaneously
+  gsap.to(ringProxy, {
+    a: TARGET_ANGLE,
+    duration: DUR,
+    ease: EASE,
+    onUpdate() { angle = ringProxy.a; updateRing(); },
+    onComplete() {
+      angle = TARGET_ANGLE;
+      gsap.set(hubEl, { clearProps: 'transform' });
+      updateRing();
+      applyScrollState(1);
+      isTransitioning = false;
+      outers.forEach(o => { o.style.pointerEvents = ''; });
+      galleryLocked = true;
+      clearTimeout(galleryLockTimer);
+      galleryLockTimer = setTimeout(() => { galleryLocked = false; }, 1000);
+    },
+  });
+})();
+
+// ────────────────────────────────────────────────────────────
+// PLANE ANIMATION
+// ────────────────────────────────────────────────────────────
+(function() {
+  const plane    = document.getElementById('entryPlane');
+  const skyline  = document.querySelector('.entry-skyline');
+  if (!plane || !skyline) return;
+
+  const RTL = '  ╱ ╱\n<▯▯▯▯▯▯╳\n    \\ \\\n  ▔▔';
+  const LTR = '╲ ╲  \n╳▯▯▯▯▯▯>\n/ /    \n▔▔  ';
+
+  let goingRight = false;
+  let planeTimer = null;
+
+  function setPlaneTop() {
+    const imgH   = skyline.offsetHeight;
+    const planeH = plane.offsetHeight || 56;
+    plane.style.top = (window.innerHeight - imgH - planeH - 6) + 'px';
+  }
+
+  function launch() {
+    if (scrollProgress > 0.25) { schedule(); return; }
+
+    goingRight = !goingRight;
+    setPlaneTop();
+    const vw  = window.innerWidth;
+    const dur = 10 + vw / 120;
+
+    if (goingRight) {
+      plane.textContent = LTR;
+      gsap.set(plane, { x: -(plane.offsetWidth + 40), opacity: 1 });
+      gsap.to(plane, { x: vw + 40, duration: dur, ease: 'linear', onComplete: done });
+    } else {
+      plane.textContent = RTL;
+      gsap.set(plane, { x: vw + 40, opacity: 1 });
+      gsap.to(plane, { x: -(plane.offsetWidth + 40), duration: dur, ease: 'linear', onComplete: done });
+    }
+  }
+
+  function done() {
+    gsap.set(plane, { opacity: 0 });
+    schedule();
+  }
+
+  function schedule() {
+    clearTimeout(planeTimer);
+    planeTimer = setTimeout(launch, 30000);
+  }
+
+  window.addEventListener('resize', () => { if (plane.style.opacity !== '0') setPlaneTop(); });
+
+  // First pass after 5 seconds
+  planeTimer = setTimeout(launch, 5000);
+})();
 </script>
 </body>
 </html>
