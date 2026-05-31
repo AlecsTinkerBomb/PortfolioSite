@@ -132,21 +132,40 @@
       -webkit-user-select: none;
     }
 
-    /* ─── ENTRY PLANE ─── */
-    .entry-plane {
+    /* ─── SCROLL HINT ─── */
+    .scroll-hint {
       position: fixed;
-      z-index: 3;
+      right: 11%;
+      bottom: 10vh;
+      z-index: 2;
       white-space: pre;
       font-family: 'Courier New', Courier, monospace;
-      font-size: clamp(8px, 1.6vw, 15px);
-      line-height: 1.2;
+      font-size: clamp(10px, 1.3vw, 16px);
+      line-height: 1.5;
       color: #ffffff;
       letter-spacing: 0;
       pointer-events: none;
       user-select: none;
       -webkit-user-select: none;
+      text-align: center;
+      animation: hint-bob 1.6s ease-in-out infinite;
+    }
+
+    @keyframes hint-bob {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(7px); }
+    }
+
+    /* ─── ENTRY PLANE ─── */
+    .entry-plane {
+      position: fixed;
+      z-index: 3;
+      height: auto;
+      width: clamp(80px, 10vw, 150px);
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
       opacity: 0;
-      left: 0;
     }
 
     /* ─── ENTRY ─── */
@@ -637,7 +656,13 @@
   </div>
 </section>
 
-<pre class="entry-plane" id="entryPlane" aria-hidden="true"></pre>
+<img class="entry-plane" id="entryPlane" src="assets/plane.png" alt="" aria-hidden="true" draggable="false" />
+
+<pre class="scroll-hint" id="scrollHint" aria-hidden="true">  ||
+  ||
+  ||
+  \  /
+  V</pre>
 
 <!-- ══════════════════════════════════════════
      PROJECT OVERLAY
@@ -1238,6 +1263,14 @@ function applyScrollState(p) {
   // B2: Hide skyline once hub is fully in so it doesn't show through info
   if (skylineEl) skylineEl.style.opacity = hubT < 1 ? '1' : '0';
 
+  // B3: Entry-only elements stay full opacity until gallery is fully locked (p=1), then vanish
+  const entryFade = Math.max(0, 1 - Math.max(0, (p - 0.9) / 0.1));
+  const entryAsciiEl = document.querySelector('.entry-ascii');
+  if (entryAsciiEl) entryAsciiEl.style.opacity = String(entryFade);
+
+  const hintEl = document.getElementById('scrollHint');
+  if (hintEl) hintEl.style.opacity = String(entryFade);
+
   // C: Info back arrow fades in when fully on info page
   const infoUpEl = document.getElementById('infoUp');
   if (infoUpEl) {
@@ -1687,58 +1720,72 @@ document.getElementById('projectBack').addEventListener('click', closeProject);
 })();
 
 // ────────────────────────────────────────────────────────────
-// PLANE ANIMATION
+// PLANE ANIMATION — side-view ASCII, steps across like spacebar
 // ────────────────────────────────────────────────────────────
 (function() {
-  const plane    = document.getElementById('entryPlane');
-  const skyline  = document.querySelector('.entry-skyline');
+  const plane   = document.getElementById('entryPlane');
+  const skyline = document.querySelector('.entry-skyline');
   if (!plane || !skyline) return;
 
-  const RTL = '  ╱ ╱\n<▯▯▯▯▯▯╳\n    \\ \\\n  ▔▔';
-  const LTR = '╲ ╲  \n╳▯▯▯▯▯▯>\n/ /    \n▔▔  ';
+  const STEP_PX  = 10; // pixels per hop
+  const STEP_MS  = 75; // ms between hops
 
-  let goingRight = false;
+  let stepTimer  = null;
   let planeTimer = null;
+  let posX       = 0;
+  let goingRight = false;
 
   function setPlaneTop() {
     const imgH   = skyline.offsetHeight;
     const planeH = plane.offsetHeight || 56;
-    plane.style.top = (window.innerHeight - imgH - planeH - 6) + 'px';
+    plane.style.top = (window.innerHeight - imgH - planeH - 10) + 'px';
   }
 
   function launch() {
     if (scrollProgress > 0.25) { schedule(); return; }
 
-    goingRight = !goingRight;
-    setPlaneTop();
-    const vw  = window.innerWidth;
-    const dur = 10 + vw / 120;
+    goingRight = Math.random() < 0.5;
 
-    if (goingRight) {
-      plane.textContent = LTR;
-      gsap.set(plane, { x: -(plane.offsetWidth + 40), opacity: 1 });
-      gsap.to(plane, { x: vw + 40, duration: dur, ease: 'linear', onComplete: done });
-    } else {
-      plane.textContent = RTL;
-      gsap.set(plane, { x: vw + 40, opacity: 1 });
-      gsap.to(plane, { x: -(plane.offsetWidth + 40), duration: dur, ease: 'linear', onComplete: done });
-    }
+    // Mirror when going left→right so the plane faces forward
+    plane.style.transform = goingRight ? 'scaleX(-1)' : 'scaleX(1)';
+
+    plane.style.opacity = '1';
+    setPlaneTop();
+
+    const vw = window.innerWidth;
+    const pw = plane.offsetWidth + 20;
+
+    posX = goingRight ? -pw : vw + pw;
+    plane.style.left = posX + 'px';
+
+    clearInterval(stepTimer);
+    stepTimer = setInterval(step, STEP_MS);
   }
 
-  function done() {
-    gsap.set(plane, { opacity: 0 });
-    schedule();
+  function step() {
+    posX += goingRight ? STEP_PX : -STEP_PX;
+    plane.style.left = posX + 'px';
+    const vw = window.innerWidth;
+    const pw = plane.offsetWidth + 20;
+    if ((goingRight && posX > vw + pw) || (!goingRight && posX < -pw)) {
+      clearInterval(stepTimer);
+      plane.style.opacity = '0';
+      schedule();
+    }
   }
 
   function schedule() {
     clearTimeout(planeTimer);
-    planeTimer = setTimeout(launch, 30000);
+    const delay = 5000 + Math.random() * 20000; // 5–25 seconds
+    planeTimer = setTimeout(launch, delay);
   }
 
-  window.addEventListener('resize', () => { if (plane.style.opacity !== '0') setPlaneTop(); });
+  window.addEventListener('resize', () => {
+    if (parseFloat(plane.style.opacity) > 0) setPlaneTop();
+  });
 
-  // First pass after 5 seconds
-  planeTimer = setTimeout(launch, 5000);
+  // Forced flyover 2s after load, then random repeats
+  planeTimer = setTimeout(launch, 2000);
 })();
 </script>
 </body>
