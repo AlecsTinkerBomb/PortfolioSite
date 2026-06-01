@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git init *)"
+      "Bash(git init *)",
+      "PowerShell($file = Get-Item \"c:\\\\Users\\\\alecc\\\\Desktop\\\\Website Master Folder\\\\VS Code Database\\\\assets\\\\p2 p2 1.jpg\"; \"Size: $\\([math]::Round\\($file.Length / 1MB, 2\\)\\) MB\"; \"Extension: $\\($file.Extension\\)\")"
     ]
   }
 }
