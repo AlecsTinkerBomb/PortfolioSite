@@ -198,11 +198,39 @@
       margin-top: 20px;
     }
 
-    /* Divider */
-    .section-rule {
-      border: none;
-      border-top: 1px solid rgba(0,0,0,0.08);
-      margin: 64px 0;
+    /* ── PROJECT NAVIGATION ── */
+    .project-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-bottom: 80px;
+    }
+
+    .project-nav-btn {
+      display: block;
+      border: 2.5px solid #999999;
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 1.8 / 1;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .project-nav-btn--large {
+      grid-column: 1 / -1;
+    }
+
+    .project-nav-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    }
+
+    .project-nav-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     /* ── IMAGE STACK ── */
@@ -307,20 +335,27 @@
       </div>
     </div>
 
-    <section class="project-section">
-      <p class="section-label">Overview</p>
-      <h2 class="section-heading">Project Two</h2>
+    <div class="project-nav">
+      <a href="#project-p3" class="project-nav-btn project-nav-btn--large">
+        <img src="assets/p2 p3.jpg" alt="P3: Fayetteville Art Hall" style="transform: scale(1.48) translateY(7%);">
+      </a>
+      <a href="#project-p2" class="project-nav-btn">
+        <img src="assets/p2 p2.jpg" alt="P2: Roof Transformation">
+      </a>
+      <a href="#project-p1" class="project-nav-btn">
+        <img src="assets/p2 p1.jpg" alt="P1: Roof Precedent">
+      </a>
+    </div>
+
+    <hr class="section-rule">
+
+    <section class="project-section" id="project-p3" style="margin-top: 96px;">
+      <p class="section-label">P3</p>
+      <h2 class="section-heading">Fayetteville Art Hall</h2>
       <p class="section-body">
-        <strong>P1: Roof Precedent</strong> examines a large-span hangar's rigid frame structural system alongside envelope strategies for natural ventilation and solar gain mitigation. The accompanying analyses establish this precedent study as the semester's foundational framework.
-      </p>
-      <p class="section-body">
-        <strong>P2: Roof Transformation</strong> builds on the large-span hangar precedent, exploring how a single idea "expand" can transform structure and space. Emerging from a series of nine design experiments, the concept drives a spatial journey from a tight, intimate entry to a soaring open interior, creating a compelling sense of release while staying rooted in the logic of the original design.
-      </p>
-      <p class="section-body">
-        <strong>P3: Fayetteville Art Hall</strong> is rooted in the structural logic of the large-span hangar precedent and shaped by the spatial experimentation of the "expand" concept. The Kunsthalle translates rigid-frame thinking into a bold, angular form that stands in sharp contrast to the winding path leading to it. That same sense of expansion drives the interior experience—carefully placed light openings shape distinct atmospheres throughout, from soft overhead washes to framed landscape views, all within a structure designed around indirect natural light. The building moves beyond a simple gallery, connecting the wooded Ramble path of Fayetteville, local gathering spaces, and art exhibition into one seamless public experience.
+        Rooted in the structural logic of the large-span hangar precedent and shaped by the spatial experimentation of the "expand" concept, the Kunsthalle translates rigid-frame thinking into a bold, angular form that stands in sharp contrast to the winding path leading to it. That same sense of expansion drives the interior experience—carefully placed light openings shape distinct atmospheres throughout, from soft overhead washes to framed landscape views, all within a structure designed around indirect natural light. The building moves beyond a simple gallery, connecting the wooded Ramble path of Fayetteville, local gathering spaces, and art exhibition into one seamless public experience.
       </p>
     </section>
-
 
   </div>
 
@@ -335,6 +370,29 @@
     <img src="assets/p2 8.jpg" alt="" class="project-img" style="width: 90%; margin: 0 auto 96px;">
     <img src="assets/p2 9.jpg" alt="" class="project-img" style="width: 90%; margin: 0 auto;">
     <img src="assets/p2cover.jpeg" alt="" class="project-img" style="width: 90%; margin: 96px auto 0;">
+  </div>
+
+  <div class="panel-inner">
+    <hr class="section-rule">
+
+    <section class="project-section" id="project-p2">
+      <p class="section-label">P2</p>
+      <h2 class="section-heading">Roof Transformation</h2>
+      <p class="section-body">
+        Building on the large-span hangar precedent, this project explores how a single idea "expand" can transform structure and space. Emerging from a series of nine design experiments, the concept drives a spatial journey from a tight, intimate entry to a soaring open interior, creating a compelling sense of release while staying rooted in the logic of the studied hangar precident.
+      </p>
+    </section>
+
+    <hr class="section-rule">
+
+    <section class="project-section" id="project-p1">
+      <p class="section-label">P1</p>
+      <h2 class="section-heading">Roof Precedent</h2>
+      <p class="section-body">
+        This project examines a large-span hangar's rigid frame structural system alongside envelope strategies for natural ventilation and solar gain mitigation. The accompanying analyses establish this precedent study as the semester's foundational framework.
+      </p>
+    </section>
+
   </div>
 
 </main>
@@ -363,6 +421,12 @@
     }, 120);
 
     scrollHint.style.opacity = Math.max(0, 1 - scrollTop / 80);
+
+    // Hide hero image when scrolled past
+    const heroImage = document.querySelector('.hero-image');
+    if (heroImage) {
+      heroImage.style.opacity = Math.max(0, 1 - scrollTop / (window.innerHeight * 0.9));
+    }
   }
 
   window.addEventListener('scroll', updateDot, { passive: true });
