@@ -345,6 +345,7 @@
     /* ── HIDE NATIVE SCROLLBAR ── */
     html {
       scrollbar-width: none;
+      scroll-behavior: smooth;
     }
     html::-webkit-scrollbar {
       display: none;
@@ -375,6 +376,24 @@
       .panel-inner      { padding: 48px 24px 80px; }
       .project-meta     { gap: 28px; }
       .project-nav      { gap: 12px; padding: 0 12px; }
+
+      /* Any image block with an overlay: stack text above image on mobile */
+      .p2-image-block {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .p2-text-overlay {
+        position: static;
+        order: -1;
+        max-width: 100%;
+        padding: 32px 24px;
+        color: #111111;
+      }
+
+      .p2-text-overlay .section-label { color: #aaaaaa; }
+      .p2-text-overlay .section-heading { color: #111111; }
+      .p2-text-overlay .section-body { color: #444444; }
     }
   </style>
 </head>
