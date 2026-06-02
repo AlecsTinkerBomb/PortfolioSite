@@ -115,6 +115,13 @@
       -webkit-user-select: none;
       object-fit: cover;
       object-position: bottom center;
+      clip-path: inset(100% 0 0 0);
+      animation: skyline-build 3s steps(48, end) 0.4s forwards;
+    }
+
+    @keyframes skyline-build {
+      from { clip-path: inset(100% 0 0 0); }
+      to   { clip-path: inset(0% 0 0 0); }
     }
 
     /* ─── ENTRY ASCII ─── */
@@ -1184,6 +1191,18 @@ carouselWrap.addEventListener('touchend', () => {
 }, { passive: true });
 
 // ────────────────────────────────────────────────────────────
+// HIDE SCROLL HINT ON FIRST INPUT
+// ────────────────────────────────────────────────────────────
+function hideHintOnce() {
+  const hintEl = document.getElementById('scrollHint');
+  if (hintEl) hintEl.style.opacity = '0';
+  window.removeEventListener('wheel',      hideHintOnce);
+  window.removeEventListener('touchstart', hideHintOnce);
+}
+window.addEventListener('wheel',      hideHintOnce, { passive: true });
+window.addEventListener('touchstart', hideHintOnce, { passive: true });
+
+// ────────────────────────────────────────────────────────────
 // WHEEL — hub guard + Entry/Info physical scroll
 // ────────────────────────────────────────────────────────────
 window.addEventListener('wheel', (e) => {
@@ -1283,10 +1302,7 @@ function applyScrollState(p) {
   // B3: Skyline fades from 100% → 50% opacity as gallery slides in, stays at 50%
   if (skylineEl) skylineEl.style.opacity = String((1.0 - hubT * 0.95) * (1 - infoT));
 
-  // B4: Scroll hint fades out as gallery arrives; ASCII fades out going to about me
-  const entryFade = Math.max(0, 1 - Math.max(0, (p - 0.9) / 0.1));
-  const hintEl = document.getElementById('scrollHint');
-  if (hintEl) hintEl.style.opacity = String(entryFade);
+  // B4: ASCII fades out going to about me
 
   const entryAsciiEl = document.querySelector('.entry-ascii');
   if (entryAsciiEl) entryAsciiEl.style.opacity = String(Math.max(0, 1 - infoT * 2));
