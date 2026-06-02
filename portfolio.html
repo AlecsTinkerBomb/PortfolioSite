@@ -158,6 +158,21 @@
       50%       { transform: translateY(7px); }
     }
 
+    /* ─── ENTRY BIRD ─── */
+    .entry-bird {
+      position: fixed;
+      z-index: 3;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: clamp(10px, 1.25vw, 18px);
+      color: #ffffff;
+      line-height: 1;
+      white-space: pre;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+      opacity: 0;
+    }
+
     /* ─── ENTRY PLANE ─── */
     .entry-plane {
       position: fixed;
@@ -195,7 +210,7 @@
       overflow: hidden;
       opacity: 0;
       pointer-events: none;
-      background: #f8f7f5;
+      background: transparent;
     }
 
     /* Hub back arrow */
@@ -659,6 +674,7 @@
 </section>
 
 <img class="entry-plane" id="entryPlane" src="assets/plane.png" alt="" aria-hidden="true" draggable="false" />
+<span class="entry-bird" id="entryBird" aria-hidden="true">\o/</span>
 
 <pre class="scroll-hint" id="scrollHint" aria-hidden="true">  ||
   ||
@@ -744,9 +760,9 @@
 // DATA
 // ────────────────────────────────────────────────────────────
 const PROJECTS = [
-  { name: 'Project One',   seed: 'arch1',     cover: 'assets/p1cover.jpg',  type: 'Architecture', year: 'January – May 2025', url: 'project1.html' },
-  { name: 'Project Two',   seed: 'build2',    cover: 'assets/p2cover.jpeg', type: 'Urban Design',  year: '2025', url: 'project2.html' },
-  { name: 'Project Three', seed: 'design3',   cover: 'assets/p3cover.jpg',  type: 'Interior',      year: '2023', url: 'project3.html' },
+  { name: 'Project One',   seed: 'arch1',     cover: 'assets/p1carouselcover.jpg',  type: 'Architecture', year: 'January – May 2025', url: 'project1.html' },
+  { name: 'Project Two',   seed: 'build2',    cover: 'assets/p2carouselcover.jpeg', type: 'Urban Design',  year: '2025', url: 'project2.html' },
+  { name: 'Project Three', seed: 'design3',   cover: 'assets/p3carouselcover.jpg',  type: 'Interior',      year: '2023', url: 'project3.html' },
   { name: 'Project Four',  seed: 'concrete4', cover: null,                  type: 'Installation',  year: '2023' },
   { name: 'Project Five',  seed: 'studio5',   cover: null,                  type: 'Research',      year: '2022' },
 ];
@@ -1250,28 +1266,35 @@ function applyScrollState(p) {
 
   // A: Track stays static — entry is always at p=0, no physical track movement needed
 
-  // B: Entry→Hub: bgLayer stays dark (hub's own white covers it).
-  //    Hub→Info: bgLayer transitions light→dark for the gradient reveal.
+  // B: bgLayer inverts from dark→light as gallery slides in, then light→dark for info
   if (p <= 1) {
-    bgLayer.style.backgroundColor = '#111111';
+    const v = Math.round(17 + (238 - 17) * hubT);
+    bgLayer.style.backgroundColor = `rgb(${v},${v},${v})`;
   } else {
     const darkRatio = Math.max(0, Math.min(1, p - 1));
-    const r = Math.round(248 + (14  - 248) * darkRatio);
-    const g = Math.round(247 + (13  - 247) * darkRatio);
-    const b = Math.round(245 + (12  - 245) * darkRatio);
-    bgLayer.style.backgroundColor = `rgb(${r},${g},${b})`;
+    const v = Math.round(238 + (30 - 238) * darkRatio);
+    bgLayer.style.backgroundColor = `rgb(${v},${v},${v})`;
   }
 
-  // B2: Hide skyline once hub is fully in so it doesn't show through info
-  if (skylineEl) skylineEl.style.opacity = hubT < 1 ? '1' : '0';
+  // B2: Invert entry canvas (ASCII + skyline) progressively as gallery slides in
+  const scrollCanvasEl = document.getElementById('scrollCanvas');
+  if (scrollCanvasEl) scrollCanvasEl.style.filter = `invert(${hubT})`;
 
-  // B3: Entry-only elements stay full opacity until gallery is fully locked (p=1), then vanish
+  // B3: Skyline fades from 100% → 50% opacity as gallery slides in, stays at 50%
+  if (skylineEl) skylineEl.style.opacity = String((1.0 - hubT * 0.95) * (1 - infoT));
+
+  // B4: Scroll hint fades out as gallery arrives; ASCII fades out going to about me
   const entryFade = Math.max(0, 1 - Math.max(0, (p - 0.9) / 0.1));
-  const entryAsciiEl = document.querySelector('.entry-ascii');
-  if (entryAsciiEl) entryAsciiEl.style.opacity = String(entryFade);
-
   const hintEl = document.getElementById('scrollHint');
   if (hintEl) hintEl.style.opacity = String(entryFade);
+
+  const entryAsciiEl = document.querySelector('.entry-ascii');
+  if (entryAsciiEl) entryAsciiEl.style.opacity = String(Math.max(0, 1 - infoT * 2));
+
+  const planeEl = document.getElementById('entryPlane');
+  if (planeEl && infoT > 0) planeEl.style.opacity = '0';
+  const birdEl = document.getElementById('entryBird');
+  if (birdEl && infoT > 0) birdEl.style.opacity = '0';
 
   // C: Info back arrow fades in when fully on info page
   const infoUpEl = document.getElementById('infoUp');
@@ -1289,17 +1312,6 @@ function applyScrollState(p) {
   hubEl.style.opacity      = hubT > 0 ? '1' : '0';
   hubEl.style.pointerEvents = p >= 1 ? 'auto' : 'none';
   if (p >= 1 && view !== 'hub' && view !== 'info') view = 'hub';
-
-  // E2: Hub background darkens to match about me as it exits
-  if (p > 1) {
-    const darkRatio = Math.max(0, Math.min(1, p - 1));
-    const hr = Math.round(248 + (14  - 248) * darkRatio);
-    const hg = Math.round(247 + (13  - 247) * darkRatio);
-    const hb = Math.round(245 + (12  - 245) * darkRatio);
-    hubEl.style.backgroundColor = `rgb(${hr},${hg},${hb})`;
-  } else {
-    hubEl.style.backgroundColor = '#f8f7f5';
-  }
 
   // F: Info slides up from bottom as p goes from 1 → 2
   infoEl.style.transform    = `translateY(${(1 - infoT) * 100}vh)`;
@@ -1788,6 +1800,72 @@ document.getElementById('projectBack').addEventListener('click', closeProject);
 
   // Forced flyover 2s after load, then random repeats
   planeTimer = setTimeout(launch, 2000);
+})();
+
+// ────────────────────────────────────────────────────────────
+// BIRD ANIMATION
+// ────────────────────────────────────────────────────────────
+(function() {
+  const bird = document.getElementById('entryBird');
+  const skyline = document.querySelector('.entry-skyline');
+  if (!bird || !skyline) return;
+
+  const STEP_PX = 6;
+  const STEP_MS = 60;
+
+  const FRAMES = ['\\o/', '/°\\'];
+  let stepTimer   = null;
+  let birdTimer   = null;
+  let posX        = 0;
+  let goingRight  = false;
+  let flightCount = 0;
+  let tick        = 0;
+
+  function launch() {
+    if (scrollProgress > 0.25) { schedule(); return; }
+
+    goingRight = flightCount % 2 === 0;
+    flightCount++;
+    bird.style.transform = goingRight ? 'scaleX(-1)' : 'scaleX(1)';
+
+    // Fly at a random height in the upper 60% of the screen
+    const topRange = window.innerHeight * 0.6;
+    bird.style.top = (58 + Math.random() * topRange) + 'px';
+
+    tick = 0;
+    bird.textContent = FRAMES[0];
+    bird.style.opacity = '1';
+
+    const vw = window.innerWidth;
+    const bw = bird.offsetWidth + 20;
+    posX = goingRight ? -bw : vw + bw;
+    bird.style.left = posX + 'px';
+
+    clearInterval(stepTimer);
+    stepTimer = setInterval(step, STEP_MS);
+  }
+
+  function step() {
+    tick++;
+    if (tick % 4 === 0) bird.textContent = FRAMES[(tick / 4) % FRAMES.length];
+    posX += goingRight ? STEP_PX : -STEP_PX;
+    bird.style.left = posX + 'px';
+    const vw = window.innerWidth;
+    const bw = bird.offsetWidth + 20;
+    if ((goingRight && posX > vw + bw) || (!goingRight && posX < -bw)) {
+      clearInterval(stepTimer);
+      bird.style.opacity = '0';
+      schedule();
+    }
+  }
+
+  function schedule() {
+    clearTimeout(birdTimer);
+    const delay = 8000 + Math.random() * 25000;
+    birdTimer = setTimeout(launch, delay);
+  }
+
+  birdTimer = setTimeout(launch, 5000 + Math.random() * 8000);
 })();
 </script>
 </body>
