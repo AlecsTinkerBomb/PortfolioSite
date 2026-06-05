@@ -1127,7 +1127,7 @@ function startCoast() {
   }
   function frame() {
     velocity *= 0.91;
-    angle    += velocity;
+    angle    -= velocity;
     updateRing();
     if (Math.abs(velocity) < 0.08) { snapToNearest(); return; }
     coastingRaf = requestAnimationFrame(frame);
@@ -1172,7 +1172,7 @@ carouselWrap.addEventListener('touchmove', (e) => {
     const mdx = t.clientX - lastDragX;
     const dt  = Math.max(1, performance.now() - lastDragT);
     velocity  = (mdx / dt) * 10;
-    angle    += mdx * 0.22;
+    angle    -= mdx * 0.22;
     lastDragX = t.clientX;
     lastDragT = performance.now();
     dragMoved = true;
