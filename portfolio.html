@@ -1247,8 +1247,11 @@ window.addEventListener('touchstart', (e) => {
 window.addEventListener('touchmove', (e) => {
   if (isTransitioning) { e.preventDefault(); return; }
   if (view === 'hub') {
+    e.preventDefault();
+    if (touchDir === 'h') return; // horizontal carousel swipe — don't interfere
     const dy = scrollTouchStartY - e.touches[0].clientY;
     scrollTouchStartY = e.touches[0].clientY;
+    if (Math.abs(dy) < 6) return; // ignore tiny vertical drift during swipe
     if (dy > 0 && !galleryLocked) { // swipe up from hub = go forward to info (only if unlocked)
       scrollVelocity += dy * 0.00012;
       scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
@@ -1263,7 +1266,6 @@ window.addEventListener('touchmove', (e) => {
       scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
       startScrollLoop();
     }
-    e.preventDefault();
     return;
   }
   if (view !== 'entry' && view !== 'info') return;
