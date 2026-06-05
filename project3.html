@@ -56,12 +56,12 @@
       font-size: var(--text-sm);
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.75);
+      color: #111111;
       text-decoration: none;
       transition: color 0.2s ease;
     }
 
-    .back-btn:hover { color: #ffffff; }
+    .back-btn:hover { color: #000000; }
 
     .hero-title-block {
       position: fixed;
@@ -134,7 +134,7 @@
     .project-meta {
       display: flex;
       gap: 48px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       padding-bottom: 48px;
       border-bottom: 1px solid rgba(0,0,0,0.08);
       margin-bottom: 64px;
@@ -157,6 +157,7 @@
       font-family: var(--font-display);
       font-size: var(--text-base);
       color: #111111;
+      white-space: nowrap;
     }
 
     .project-section { margin-bottom: 64px; }
@@ -234,16 +235,25 @@
 
     .project-nav-btn:hover img { transform: scale(1.04); }
 
-    .project-nav-btn--large img { transform: scale(1.48) translateY(7%); }
-    .project-nav-btn--large:hover img { transform: scale(1.54) translateY(7%); }
+    .project-nav-btn--large img { transform: scale(1.0); }
+    .project-nav-btn--large:hover img { transform: scale(1.04); }
+
+    .project-nav-btn--p2 img {
+      transform: scale(1.25);
+      object-position: 72% center;
+    }
+    .project-nav-btn--p2:hover img {
+      transform: scale(1.30);
+      object-position: 72% center;
+    }
 
     .project-nav-btn--p1 img {
       transform: scale(1.03);
-      object-position: center 60%;
+      object-position: center top;
     }
     .project-nav-btn--p1:hover img {
       transform: scale(1.07);
-      object-position: center 60%;
+      object-position: center top;
     }
 
     .nav-btn-label {
@@ -259,6 +269,20 @@
 
     .project-nav-btn:hover .nav-btn-label {
       background: linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.20) 55%, transparent 80%);
+    }
+
+    .project-nav-btn--p2 .nav-btn-label {
+      background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.08) 45%, transparent 70%);
+    }
+    .project-nav-btn--p2:hover .nav-btn-label {
+      background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.12) 50%, transparent 75%);
+    }
+
+    .project-nav-btn--large .nav-btn-label {
+      background: linear-gradient(to top, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.05) 40%, transparent 65%);
+    }
+    .project-nav-btn--large:hover .nav-btn-label {
+      background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.08) 45%, transparent 70%);
     }
 
     .nav-btn-eyebrow {
@@ -412,11 +436,11 @@
     <div class="project-meta">
       <div class="meta-item">
         <span class="meta-label">Class</span>
-        <span class="meta-value">ARCH 2XXXX</span>
+        <span class="meta-value">ARCH Design IV 20206</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Duration</span>
-        <span class="meta-value">2023</span>
+        <span class="meta-value">January – May 2026</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Status</span>
@@ -428,10 +452,8 @@
 
   <div class="project-nav">
     <a href="#hr-p3" class="project-nav-btn project-nav-btn--large" data-scroll-target="hr-p3">
-      <img src="" alt="Section 3">
+      <img src="assets/p3 p3 cover.jpg" alt="Section 3">
       <div class="nav-btn-label">
-        <span class="nav-btn-eyebrow">Part 3</span>
-        <span class="nav-btn-title">Section Title</span>
       </div>
       <div class="nav-btn-arrow">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -439,11 +461,11 @@
         </svg>
       </div>
     </a>
-    <a href="#hr-p2" class="project-nav-btn" data-scroll-target="hr-p2">
-      <img src="" alt="Section 2">
+    <a href="#hr-p2" class="project-nav-btn project-nav-btn--p2" data-scroll-target="hr-p2">
+      <img src="assets/p3 p2 cover.png" alt="Section 2">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Part 2</span>
-        <span class="nav-btn-title">Section Title</span>
+        <span class="nav-btn-title">Art Corridor Site Analysis</span>
       </div>
       <div class="nav-btn-arrow nav-btn-arrow--grey">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -452,10 +474,10 @@
       </div>
     </a>
     <a href="#hr-p1" class="project-nav-btn project-nav-btn--p1" data-scroll-target="hr-p1">
-      <img src="" alt="Section 1">
+      <img src="assets/p3 p1 cover.jpg" alt="Section 1">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Part 1</span>
-        <span class="nav-btn-title">Section Title</span>
+        <span class="nav-btn-title">Urban Vertical Precedent Study</span>
       </div>
       <div class="nav-btn-arrow">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -469,10 +491,10 @@
     <hr class="section-rule" id="hr-p3">
 
     <section class="project-section" id="project-p3" style="margin-top: 96px;">
-      <p class="section-label">Part 3</p>
-      <h2 class="section-heading">Section Title</h2>
+      <p class="section-label">Final Work</p>
+      <h2 class="section-heading">Civil Culinary School</h2>
       <p class="section-body">
-        Section description goes here.
+        The Civil Culinary School project proposes an adaptive reuse of the Porter Produce Warehouse in Fayetteville, Arkansas, transforming an existing industrial structure into a civic culinary school — the Porter Center for Food and Beverage Studies. With the project one precedent in mind, the Porter House is expanded through means of structure, sequence, movement and facade composition. With the Rosenthal precedent in mind, a rectangular composition was focused with the intent of keeping the interior ambiguous. The glazing on the facade contrasted that, hinting at the sequence of the building before entry. Tasked with casting models, two models were produced with each scheme, one representing solid and the other void.
       </p>
       <a href="#" class="back-to-nav" aria-label="Back to top">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -490,9 +512,9 @@
   <div class="panel-inner" style="padding-top: 64px;">
     <section class="project-section" id="project-p2" style="margin-top: 32px;">
       <p class="section-label">Part 2</p>
-      <h2 class="section-heading">Section Title</h2>
+      <h2 class="section-heading">Art Corridor Site Analysis</h2>
       <p class="section-body">
-        Section description goes here.
+        As a group our class visited and analyzed the Porter Art Warehouse in Fayetteville Arkansas. From this, we then created digital drawings and analysis' of the area in preparation of the final step of the project.
       </p>
       <a href="#" class="back-to-nav" aria-label="Back to top">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -510,9 +532,9 @@
   <div class="panel-inner" style="padding-top: 64px;">
     <section class="project-section" id="project-p1" style="margin-top: 32px;">
       <p class="section-label">Part 1</p>
-      <h2 class="section-heading">Section Title</h2>
+      <h2 class="section-heading">Urban Vertical Precedent Study</h2>
       <p class="section-body">
-        Section description goes here.
+        The Rosenthal Center for Contemporary Art by Zaha Hadid served as a foundational precedent throughout the semester, establishing a framework for how architecture engages its urban context. Its "urban carpet" — a ground plane extending from the sidewalk into a suspended ramped mezzanine — became a recurring reference point for decisions around circulation, threshold, and interior-exterior continuity. Returning to Zaha's design intent across the semester reinforced how a single cohesive move can drive an entire building's spatial narrative.
       </p>
       <a href="#" class="back-to-nav" aria-label="Back to top">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
