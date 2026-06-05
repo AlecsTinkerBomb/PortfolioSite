@@ -1128,7 +1128,7 @@ function startCoast() {
   }
   function frame() {
     velocity *= 0.91;
-    angle    -= velocity;
+    angle    += velocity;
     updateRing();
     if (Math.abs(velocity) < 0.08) { snapToNearest(); return; }
     coastingRaf = requestAnimationFrame(frame);
@@ -1250,17 +1250,17 @@ window.addEventListener('touchmove', (e) => {
   if (view === 'hub') {
     const dy = scrollTouchStartY - e.touches[0].clientY;
     scrollTouchStartY = e.touches[0].clientY;
-    if (dy < 0 && !galleryLocked) { // swipe down from hub = go forward to info (only if unlocked)
-      scrollVelocity -= dy * 0.00012;
+    if (dy > 0 && !galleryLocked) { // swipe up from hub = go forward to info (only if unlocked)
+      scrollVelocity += dy * 0.00012;
       scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
       startScrollLoop();
-    } else if (dy > 0) { // swipe up from hub = go back to entry, always allowed
+    } else if (dy < 0) { // swipe down from hub = go back to entry, always allowed
       view = 'entry';
       outers.forEach(o => { o.style.pointerEvents = 'none'; });
       if (snapTween) snapTween.kill();
       galleryLocked = false;
       clearTimeout(galleryLockTimer);
-      scrollVelocity -= dy * 0.00012;
+      scrollVelocity += dy * 0.00012;
       scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
       startScrollLoop();
     }
@@ -1270,7 +1270,7 @@ window.addEventListener('touchmove', (e) => {
   if (view !== 'entry' && view !== 'info') return;
   const dy = scrollTouchStartY - e.touches[0].clientY;
   scrollTouchStartY = e.touches[0].clientY;
-  scrollVelocity -= dy * 0.00012;
+  scrollVelocity += dy * 0.00012;
   scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
   startScrollLoop();
   e.preventDefault();
