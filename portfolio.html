@@ -850,7 +850,7 @@ function isMobile() { return window.innerWidth < 640; }
 
 function cardDims() {
   if (isMobile()) {
-    const w = Math.min(300, window.innerWidth * 0.75);
+    const w = Math.min(225, window.innerWidth * 0.56);
     return { w, h: Math.round(w * 9 / 16), r: 200 };
   }
   const w = Math.min(480, window.innerWidth * 0.33);
