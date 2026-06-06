@@ -374,6 +374,25 @@
       pointer-events: none;
     }
 
+    .c-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 4;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #ffffff;
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 9px;
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
     /* ─── INFO PAGE ─── */
     #info {
       position: fixed;
@@ -911,6 +930,13 @@ function buildCarousel() {
     label.className = 'c-label';
     label.textContent = proj.name;
 
+    if (i === 2) {
+      const badge = document.createElement('div');
+      badge.className = 'c-badge';
+      badge.textContent = 'Most Recent';
+      card.appendChild(badge);
+    }
+
     card.appendChild(img);
     card.appendChild(gradient);
     card.appendChild(shine);
@@ -1341,7 +1367,7 @@ function applyScrollState(p) {
 
   // G: Ring angle — spins in on entry only, no spin on exit
   if (infoT === 0 && hubT > 0 && view !== 'hub') {
-    angle = REVEAL_SPIN * (1 - hubT);
+    angle = 2 * CARD_STEP + REVEAL_SPIN * (1 - hubT);
     updateRing();
   }
 }
