@@ -524,6 +524,218 @@
       opacity: 0;
     }
 
+    /* ─── CONTACT — tab in the bottom-right corner that grows into a message panel ─── */
+    .contact-tab {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 70;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px 18px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 999px;
+      background: rgba(15,15,15,0.78);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,0.92);
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.4s ease, transform 0.4s ease, background-color 0.2s ease;
+    }
+
+    /* hidden during the intro, appears with the gallery */
+    .contact-tab.is-ready { opacity: 1; pointer-events: auto; transform: none; }
+    .contact-tab:hover { background: rgba(15,15,15,0.92); }
+    .contact-open .contact-tab { opacity: 0; pointer-events: none; }
+
+    .contact-panel {
+      --tab-w: 130px;
+      --tab-h: 42px;
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 71;
+      width: min(380px, calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 28px;
+      border-radius: 18px;
+      background: #1a1917;
+      color: #e8e5df;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+      visibility: hidden;
+      /* starts clipped to the tab's size in the corner, so the tab appears to grow into the panel */
+      clip-path: inset(calc(100% - var(--tab-h)) 0 0 calc(100% - var(--tab-w)) round 21px);
+      transition: clip-path 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s linear 0.45s;
+    }
+
+    .contact-open .contact-panel {
+      visibility: visible;
+      clip-path: inset(0 0 0 0 round 18px);
+      transition: clip-path 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
+    }
+
+    .contact-panel > * { opacity: 0; transition: opacity 0.2s ease; }
+    .contact-open .contact-panel > * { opacity: 1; transition: opacity 0.3s ease 0.15s; }
+
+    .contact-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: rgba(232,229,223,0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .contact-close:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
+
+    .contact-title {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .contact-lede {
+      font-size: var(--text-sm);
+      line-height: 1.6;
+      color: rgba(232,229,223,0.7);
+      margin-bottom: 20px;
+    }
+
+    .contact-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .contact-field span {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(232,229,223,0.55);
+    }
+
+    .contact-field input,
+    .contact-field textarea {
+      font: inherit;
+      font-size: 0.95rem;
+      color: #e8e5df;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 11px 13px;
+      outline: none;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .contact-field textarea { resize: vertical; min-height: 120px; }
+    .contact-field input::placeholder,
+    .contact-field textarea::placeholder { color: rgba(232,229,223,0.3); }
+
+    .contact-field input:focus,
+    .contact-field textarea:focus {
+      border-color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .was-validated .contact-field :invalid { border-color: #d98b7a; }
+
+    /* spam trap: invisible to people, bots fill it in */
+    .contact-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+    .contact-send {
+      width: 100%;
+      margin-top: 4px;
+      padding: 13px;
+      border: none;
+      border-radius: 999px;
+      background: #e8e5df;
+      color: #111111;
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .contact-send:hover { transform: translateY(-1px); }
+    .contact-send:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+    .contact-status {
+      min-height: 1.3em;
+      margin-top: 10px;
+      font-size: var(--text-sm);
+      line-height: 1.5;
+      color: rgba(232,229,223,0.75);
+    }
+
+    .contact-status a { color: inherit; }
+
+    .contact-again {
+      margin-top: 4px;
+      padding: 0;
+      border: none;
+      background: none;
+      color: rgba(232,229,223,0.75);
+      font: inherit;
+      font-size: var(--text-sm);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .contact-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.78rem;
+      color: rgba(232,229,223,0.6);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .contact-links a:hover { color: #e8e5df; }
+
+    @media (max-width: 600px) {
+      .contact-tab       { right: 16px; bottom: 16px; padding: 11px; }
+      .contact-tab-label { display: none; }
+      .contact-panel     { right: 12px; bottom: 12px; width: calc(100vw - 24px); max-height: calc(100vh - 24px); padding: 24px 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .contact-panel, .contact-open .contact-panel { transition: none; }
+    }
+
     /* ─── RESPONSIVE ─── */
     @media (max-width: 600px) {
       .info-bio-block { width: 92vw; flex-direction: column; height: auto; }
@@ -671,6 +883,78 @@
         </a>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CONTACT — tab + message panel (sent with Web3Forms)
+══════════════════════════════════════════ -->
+<button class="contact-tab" id="contactTab" type="button" aria-expanded="false" aria-controls="contactPanel">
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+    <rect x="1" y="2.5" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+    <path d="M1 5l6.5 4.5L14 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+  </svg>
+  <span class="contact-tab-label">Contact</span>
+</button>
+
+<section class="contact-panel" id="contactPanel" role="dialog" aria-labelledby="contactTitle" inert>
+  <button class="contact-close" id="contactClose" type="button" aria-label="Close">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <form class="contact-form" id="contactForm" novalidate>
+    <h2 class="contact-title" id="contactTitle">Get in touch</h2>
+    <p class="contact-lede">Send me a message and it goes straight to my inbox.</p>
+    <label class="contact-field">
+      <span>Name</span>
+      <input name="name" type="text" autocomplete="name" placeholder="Your name" required>
+    </label>
+    <label class="contact-field">
+      <span>Email</span>
+      <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+    </label>
+    <label class="contact-field">
+      <span>Message</span>
+      <textarea name="message" rows="5" placeholder="Hi Alec," required></textarea>
+    </label>
+    <input class="contact-hp" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button class="contact-send" id="contactSend" type="submit">Send</button>
+    <p class="contact-status" id="contactStatus" role="status" aria-live="polite"></p>
+  </form>
+
+  <div class="contact-done" id="contactDone" hidden>
+    <h2 class="contact-title">Thanks!</h2>
+    <p class="contact-lede">Your message is on its way. I'll get back to you soon.</p>
+    <button class="contact-again" id="contactAgain" type="button">Send another message</button>
+  </div>
+
+  <div class="contact-links">
+    <a href="mailto:aleccwright@gmail.com">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+        <rect x="1" y="2.5" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M1 5l6.5 4.5L14 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      aleccwright@gmail.com
+    </a>
+    <a href="https://www.linkedin.com/in/alec-wright18/" target="_blank" rel="noopener noreferrer">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="13" height="13" rx="2.5" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M4 6.5v4.5M4 4.5v.01" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M7.5 11V8.5c0-1.1.9-2 2-2s2 .9 2 2V11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M7.5 6.5V11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      LinkedIn
+    </a>
+    <a href="https://www.instagram.com/alec_c_wright/" target="_blank" rel="noopener noreferrer">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="7.5" cy="7.5" r="2.8" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="11.2" cy="3.8" r="0.75" fill="currentColor"/>
+      </svg>
+      @alec_c_wright
+    </a>
   </div>
 </section>
 
@@ -1199,6 +1483,7 @@ carouselWrap.addEventListener('touchend', () => {
 // WHEEL — the gallery is the only page, so any scroll turns the carousel
 // ────────────────────────────────────────────────────────────
 window.addEventListener('wheel', (e) => {
+  if (e.target.closest && e.target.closest('.contact-panel')) return; // the contact form scrolls normally
   e.preventDefault();
   if (view !== 'hub' || isTransitioning || leavingToProject) return;
 
@@ -1232,6 +1517,7 @@ function spinByWheel(dx) {
 // TOUCH — the page itself never scrolls or bounces
 // ────────────────────────────────────────────────────────────
 window.addEventListener('touchmove', (e) => {
+  if (e.target.closest && e.target.closest('.contact-panel')) return; // the contact form scrolls normally
   if (touchDir !== 'h') e.preventDefault();
 }, { passive: false });
 
@@ -1329,6 +1615,7 @@ function arriveAtHub() {
   applyIntroState(1);
   updateRing();
   showCarouselHint();
+  contactTab.classList.add('is-ready');
 }
 
 // ────────────────────────────────────────────────────────────
@@ -1379,6 +1666,7 @@ function launchFlyers() {
 document.addEventListener('keydown', (e) => {
   if (e.altKey || e.ctrlKey || e.metaKey) return;
   if (view !== 'hub' || isTransitioning || leavingToProject) return;
+  if (e.target.closest && e.target.closest('input, textarea, .contact-panel')) return; // typing in the contact form
   const dir = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
   if (!dir) return;
   e.preventDefault();
@@ -1592,6 +1880,91 @@ function showCarouselHint() {
 }
 
 // ────────────────────────────────────────────────────────────
+// CONTACT — the tab grows into a message panel; messages go through
+// Web3Forms straight to my inbox, with the visitor's email as the reply-to
+// ────────────────────────────────────────────────────────────
+const WEB3FORMS_KEY = '253bc75c-2089-4544-bb7b-912d2bc4812a'; // public by design: it can only deliver to my inbox
+const contactTab    = document.getElementById('contactTab');
+const contactPanel  = document.getElementById('contactPanel');
+const contactForm   = document.getElementById('contactForm');
+const contactSend   = document.getElementById('contactSend');
+const contactStatus = document.getElementById('contactStatus');
+const contactDone   = document.getElementById('contactDone');
+
+function setContactOpen(open) {
+  // the panel's closed shape matches the tab, so opening looks like the tab growing
+  const r = contactTab.getBoundingClientRect();
+  contactPanel.style.setProperty('--tab-w', r.width + 'px');
+  contactPanel.style.setProperty('--tab-h', r.height + 'px');
+  document.documentElement.classList.toggle('contact-open', open);
+  contactTab.setAttribute('aria-expanded', String(open));
+  contactPanel.inert = !open;
+  if (open) {
+    const first = contactDone.hidden ? contactForm.querySelector('[name="name"]') : document.getElementById('contactAgain');
+    setTimeout(() => first.focus({ preventScroll: true }), 300);
+  } else {
+    contactTab.focus({ preventScroll: true });
+  }
+}
+
+function showSent() {
+  contactStatus.textContent = '';
+  contactForm.hidden = true;
+  contactDone.hidden = false;
+  document.getElementById('contactAgain').focus({ preventScroll: true });
+}
+
+contactTab.addEventListener('click', () => setContactOpen(true));
+document.getElementById('contactClose').addEventListener('click', () => setContactOpen(false));
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.documentElement.classList.contains('contact-open')) setContactOpen(false);
+});
+
+document.getElementById('contactAgain').addEventListener('click', () => {
+  contactDone.hidden = true;
+  contactForm.hidden = false;
+  contactForm.querySelector('[name="name"]').focus({ preventScroll: true });
+});
+
+contactForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!contactForm.checkValidity()) {
+    contactForm.classList.add('was-validated');
+    contactForm.reportValidity();
+    return;
+  }
+  const data = new FormData(contactForm);
+  // Spam bots tick the hidden box: act as if it sent, but send nothing
+  if (data.get('botcheck')) { contactForm.reset(); showSent(); return; }
+
+  contactSend.disabled = true;
+  contactStatus.textContent = 'Sending…';
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: `Portfolio message from ${data.get('name')}`,
+        from_name: 'Alec Wright Portfolio',
+        name: data.get('name'),
+        email: data.get('email'),
+        message: data.get('message'),
+      }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.success) throw new Error(json.message || `HTTP ${res.status}`);
+    contactForm.reset();
+    contactForm.classList.remove('was-validated');
+    showSent();
+  } catch (err) {
+    contactStatus.innerHTML = 'That didn’t go through. Try again, or email me at <a href="mailto:aleccwright@gmail.com">aleccwright@gmail.com</a>.';
+  } finally {
+    contactSend.disabled = false;
+  }
+});
+
+// ────────────────────────────────────────────────────────────
 // RETURN FROM PROJECT PAGE — gallery slides in from top
 // Triggered by the project page's Gallery button (sessionStorage)
 // or by the browser Back button (history state set in openProject).
@@ -1663,6 +2036,7 @@ function playReturn(projIdx) {
       applyIntroState(1);
       isTransitioning = false;
       outers.forEach(o => { o.style.pointerEvents = ''; });
+      contactTab.classList.add('is-ready');
     },
   });
 }
