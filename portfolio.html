@@ -126,11 +126,15 @@
       user-select: none;
       -webkit-user-select: none;
       transform: scaleY(-1);
-      clip-path: inset(100% 0 0 0);
+      /* The intro fades the city in from the top of the screen down: a soft-edged mask slides
+         along it as --reveal goes 0% → 140%. (The image is flipped, so "to top" runs down the screen.) */
+      --reveal: 0%;
+      -webkit-mask-image: linear-gradient(to top, #000 calc(var(--reveal) - 40%), transparent var(--reveal));
+              mask-image: linear-gradient(to top, #000 calc(var(--reveal) - 40%), transparent var(--reveal));
     }
 
     /* Intro already played this session: show the city fully built */
-    .intro-done .entry-skyline { clip-path: none; }
+    .intro-done .entry-skyline { -webkit-mask-image: none; mask-image: none; }
 
     /* ─── ENTRY ASCII — title along the bottom ─── */
     .entry-ascii {
@@ -1527,8 +1531,7 @@ window.addEventListener('touchmove', (e) => {
 // rises into place. Plays once per browser session and can't be skipped.
 // ────────────────────────────────────────────────────────────
 const INTRO = {
-  build:      1.7,  // s — skyline reveal
-  buildSteps: 30,   // stepped like a progress bar
+  build:      1.7,  // s — skyline fades in, top of the screen first
   panStart:   0.1,  // s
   pan:        2.4,  // s — camera move down to the title
   panShare:   0.45, // camera travel, as a share of the skyline's height
@@ -1587,8 +1590,8 @@ function playIntro(coversReady = Promise.resolve()) {
   introTimeline = gsap.timeline({ onComplete: () => { introTimeline = null; arriveAtHub(); } });
   introTimeline
     .fromTo(skylineEl,
-      { clipPath: 'inset(100% 0% 0% 0%)' },
-      { clipPath: 'inset(0% 0% 0% 0%)', duration: INTRO.build, ease: `steps(${INTRO.buildSteps})` }, 0)
+      { '--reveal': '0%' },
+      { '--reveal': '140%', duration: INTRO.build, ease: 'sine.inOut' }, 0)
     .to(scrollTrack, { y: -pan, duration: INTRO.pan, ease: 'power1.inOut' }, INTRO.panStart)
     .to(prog, { p: 1, duration: INTRO.transition, ease: 'power2.inOut',
       onUpdate: () => applyIntroState(prog.p) }, INTRO.handoff)
@@ -1601,7 +1604,7 @@ function playIntro(coversReady = Promise.resolve()) {
 function setIntroEnd() {
   if (introTimeline) { introTimeline.kill(); introTimeline = null; }
   document.documentElement.classList.add('intro-done');
-  gsap.set(skylineEl, { clipPath: 'none' });
+  gsap.set(skylineEl, { '--reveal': '140%' });
   gsap.set(scrollTrack, { y: -panDistance() });
   applyIntroState(1);
 }
