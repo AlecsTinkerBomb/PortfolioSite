@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio</title>
   <link rel="icon" href="assets/logo.png" type="image/png">
+  <script>try{var d=document.documentElement,q=new URLSearchParams(location.search).get('mode');if(q==='auto')sessionStorage.removeItem('mode');else if(q==='night'||q==='day')sessionStorage.setItem('mode',q);var m=sessionStorage.getItem('mode'),h=new Date().getHours();if(m?m==='night':(h>=20||h<6))d.classList.add('night');}catch(e){}</script>
   <script>try{var st=history.state,d=document.documentElement;if(sessionStorage.getItem('returnFromProject')||(st&&st.hub!=null)||sessionStorage.getItem('introSeen')){d.style.opacity='0';d.classList.add('intro-done');}}catch(e){}</script>
   <link rel="preconnect" href="https://api.fontshare.com">
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
@@ -740,6 +741,42 @@
       .contact-panel, .contact-open .contact-panel { transition: none; }
     }
 
+    /* ─── NIGHT — 8 PM to 6 AM on the visitor's clock: the gallery stays dark, stars come out ─── */
+    html.night { background: #111111; }
+    .night .site-logo { filter: invert(1); }
+    .night .c-card { border-color: rgba(255,255,255,0.08); }
+    .night .contact-tab { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.16); }
+    .night .contact-tab:hover { background: rgba(255,255,255,0.14); }
+    .night .contact-panel { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+
+    .entry-stars {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      animation: stars-in 2s ease forwards;
+    }
+
+    @keyframes stars-in { from { opacity: 0; } to { opacity: 1; } }
+
+    .star {
+      position: absolute;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1;
+      color: #ffffff;
+      opacity: var(--lo);
+      animation: twinkle 5s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--lo); }
+      50%      { opacity: var(--hi); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .star { animation: none; }
+    }
+
     /* ─── RESPONSIVE ─── */
     @media (max-width: 600px) {
       .info-bio-block { width: 92vw; flex-direction: column; height: auto; }
@@ -794,6 +831,7 @@
 |  __/| |_| |  _ < | | |  _|| |_| | |___ | | |_| |
 |_|    \___/|_| \_\|_| |_|   \___/|_____|___\___/</pre>
   <img class="entry-skyline" src="assets/cityskyline2.png" width="2092" height="768" alt="" aria-hidden="true" draggable="false" fetchpriority="high" />
+  <div class="entry-stars" aria-hidden="true"></div>
   <div class="entry-flyers" aria-hidden="true">
     <img class="entry-plane" id="entryPlane" src="assets/plane.png" alt="" draggable="false" />
     <span class="entry-bird" id="entryBird">\o/</span>
@@ -1071,7 +1109,6 @@ let snapTween        = null;
 let wheelSpinTimer   = null;
 let wheelSpinStart   = 0;
 let introTimeline    = null;
-let flyerTimers      = [];
 let lastInvert       = -1;
 
 let touchStartX = 0;
@@ -1102,6 +1139,7 @@ const carouselWrap  = document.getElementById('carouselWrap');
 const carouselRing  = document.getElementById('carouselRing');
 const skylineEl     = document.querySelector('.entry-skyline');
 const flyersEl      = document.querySelector('.entry-flyers');
+const starsEl       = document.querySelector('.entry-stars');
 const planeEl       = document.getElementById('entryPlane');
 const birdEl        = document.getElementById('entryBird');
 const outers = [], parts = [];
@@ -1272,6 +1310,10 @@ function resizeCards() {
 
 window.addEventListener('resize', () => {
   if (isTransitioning) return;
+  // keep the skyline / title framing and the stars matched to the new size
+  layoutTrack();
+  if (view === 'hub') gsap.set(scrollTrack, { y: -panDistance() });
+  makeStars();
   resizeCards();
   updateRing();
 });
@@ -1329,7 +1371,7 @@ function glowIn(i) {
   if (!s.glowColor) return;
   s.glowOn = true;
   pt.glow.style.background = s.glowColor;
-  gsap.to(pt.glow, { opacity: 0.85, duration: 1.8, ease: 'power2.out', overwrite: 'auto' });
+  gsap.to(pt.glow, { opacity: night ? 0.4 : 0.85, duration: 1.8, ease: 'power2.out', overwrite: 'auto' }); // softer on the dark night background
 }
 
 function glowOut(i) {
@@ -1548,21 +1590,23 @@ function layoutTrack() {
   scrollTrack.style.height = `calc(100vh + ${panDistance()}px)`;
 }
 
-// p = 0: intro (dark) → p = 1: gallery (light, inverted city)
+// p = 0: intro (dark) → p = 1: gallery (light with an inverted city — at night it stays dark)
 function applyIntroState(p) {
-  // Background goes from dark to light as the gallery slides in
-  const v = Math.round(17 + (238 - 17) * p);
+  // Background goes from dark to light as the gallery slides in (stays dark at night)
+  const v = night ? 17 : Math.round(17 + (238 - 17) * p);
   bgLayer.style.backgroundColor = `rgb(${v},${v},${v})`;
 
-  // The city and title invert with it
-  if (p !== lastInvert) {
-    lastInvert = p;
-    scrollCanvas.style.filter = `invert(${p})`;
+  // The city and title invert with it (not at night)
+  const inv = night ? 0 : p;
+  if (inv !== lastInvert) {
+    lastInvert = inv;
+    scrollCanvas.style.filter = `invert(${inv})`;
   }
 
-  // Skyline settles to a faint 5% behind the gallery; the plane and bird leave
-  skylineEl.style.opacity = String(1.0 - p * 0.95);
-  flyersEl.style.opacity  = String(1 - p);
+  // Skyline settles to a faint 5% behind the gallery; the plane and bird stay just as faint
+  const faint = String(1.0 - p * 0.95);
+  skylineEl.style.opacity = faint;
+  flyersEl.style.opacity  = faint;
 
   // Gallery slides up from the bottom
   hubEl.style.transform     = `translateY(${(1 - p) * 100}vh)`;
@@ -1612,55 +1656,128 @@ function setIntroEnd() {
 function arriveAtHub() {
   view = 'hub';
   isTransitioning = false;
-  flyerTimers.forEach(clearInterval);
-  flyerTimers = [];
   outers.forEach(o => { o.style.pointerEvents = ''; });
   applyIntroState(1);
   updateRing();
   showCarouselHint();
   contactTab.classList.add('is-ready');
+  startFlights();
 }
 
 // ────────────────────────────────────────────────────────────
-// PLANE + BIRD — one pass each during the intro, upside down like the city
+// NIGHT — 8 PM to 6 AM on the visitor's own clock: the gallery stays dark and
+// ASCII stars come out. Preview with ?mode=night or ?mode=day (kept for that tab;
+// ?mode=auto goes back to the clock). The class is set in <head> before anything draws.
 // ────────────────────────────────────────────────────────────
-function fly(el, top, pxPerSec, stepMs, frames) {
+let night = document.documentElement.classList.contains('night');
+
+function isNightNow() {
+  let forced = null;
+  try { forced = sessionStorage.getItem('mode'); } catch (e) {}
+  if (forced) return forced === 'night';
+  const h = new Date().getHours();
+  return h >= 20 || h < 6;
+}
+
+// An open page switches over at 8 PM / 6 AM
+setInterval(() => {
+  const now = isNightNow();
+  if (now === night || view !== 'hub' || isTransitioning) return;
+  night = now;
+  document.documentElement.classList.toggle('night', night);
+  applyIntroState(1);
+  makeStars();
+}, 60000);
+
+// Small ASCII stars scattered in the open sky between the hanging skyline and the title,
+// each slowly pulsing between dim and bright on its own cycle
+function makeStars() {
+  starsEl.textContent = '';
+  if (!night) return;
+  const top    = skylineEl.offsetHeight + 30;
+  const bottom = scrollTrack.offsetHeight - document.querySelector('.entry-ascii').offsetHeight - 70;
+  const width  = window.innerWidth;
+  if (bottom - top < 40) return;
+  const count  = Math.max(8, Math.min(40, Math.round(width * (bottom - top) / 22000)));
+  const glyphs = ['.', '.', '.', '*', '+', "'"];
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('span');
+    const dur  = 3 + Math.random() * 5;
+    star.className   = 'star';
+    star.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    star.style.cssText =
+      `left:${Math.round(16 + Math.random() * (width - 32))}px;` +
+      `top:${Math.round(top + Math.random() * (bottom - top))}px;` +
+      `font-size:${Math.round(10 + Math.random() * 4)}px;` +
+      `--lo:${(0.08 + Math.random() * 0.12).toFixed(2)};` +
+      `--hi:${(0.45 + Math.random() * 0.35).toFixed(2)};` +
+      `animation-duration:${dur.toFixed(1)}s;` +
+      `animation-delay:-${(Math.random() * dur).toFixed(1)}s;`;
+    starsEl.appendChild(star);
+  }
+}
+
+// ────────────────────────────────────────────────────────────
+// PLANE + BIRD — fly through the intro, then keep passing by every so often behind
+// the gallery, as faint as the skyline. Upside down like the city; the plane always
+// comes in from the right.
+// ────────────────────────────────────────────────────────────
+const PLANE_SPEED = 260; // px per second
+const BIRD_SPEED  = 180;
+let birdFromRight = false;
+let flightsStarted = false;
+
+function fly(el, top, pxPerSec, stepMs, fromRight, frames) {
+  if (el.dataset.flying) return;
+  el.dataset.flying = '1';
   const vw = window.innerWidth;
   const w  = el.offsetWidth + 20;
-  const goingRight = Math.random() < 0.5;
-  let x = goingRight ? -w : vw + w;
+  let x = fromRight ? vw + w : -w;
   let tick = 0;
 
-  // Mirror when going left→right so it faces forward; flip vertically to match the city
-  el.style.transform = `scale(${goingRight ? -1 : 1}, -1)`;
+  // The art faces left: mirror it when heading right; flip it vertically to match the city
+  el.style.transform = `scale(${fromRight ? 1 : -1}, -1)`;
   el.style.top  = top + 'px';
   el.style.left = x + 'px';
   if (frames) el.textContent = frames[0];
   el.style.opacity = '1';
 
   const timer = setInterval(() => {
-    x += (goingRight ? 1 : -1) * pxPerSec * stepMs / 1000;
+    x += (fromRight ? -1 : 1) * pxPerSec * stepMs / 1000;
     el.style.left = x + 'px';
     if (frames && ++tick % 4 === 0) el.textContent = frames[(tick / 4) % frames.length];
     if (x > vw + w || x < -w) {
       clearInterval(timer);
       el.style.opacity = '0';
+      delete el.dataset.flying;
     }
   }, stepMs);
-  flyerTimers.push(timer);
+}
+
+// Just under the hanging skyline
+function flyPlane() {
+  fly(planeEl, skylineEl.offsetHeight + 10, PLANE_SPEED, 60, true);
+}
+
+// Somewhere in the open sky between the skyline and the title, alternating sides
+function flyBird() {
+  const skyH = skylineEl.offsetHeight;
+  const room = Math.max(0, scrollTrack.offsetHeight - skyH - window.innerHeight * 0.35);
+  birdFromRight = !birdFromRight;
+  fly(birdEl, skyH + 40 + Math.random() * room, BIRD_SPEED, 50, birdFromRight, ['\\o/', '/°\\']);
 }
 
 function launchFlyers() {
   if (prefersReducedMotion) return;
-  const skyH   = skylineEl.offsetHeight;
-  const trackH = scrollTrack.offsetHeight;
+  setTimeout(flyPlane, 150);
+  setTimeout(flyBird, 450);
+}
 
-  // Plane: just under the hanging skyline, hopping across like before (faster — the intro is short)
-  setTimeout(() => fly(planeEl, skyH + 10, 420, 60), 150);
-
-  // Bird: somewhere in the open sky between the skyline and the title
-  const room = Math.max(0, trackH - skyH - window.innerHeight * 0.35);
-  setTimeout(() => fly(birdEl, skyH + 40 + Math.random() * room, 300, 50, ['\\o/', '/°\\']), 450);
+function startFlights() {
+  if (flightsStarted || prefersReducedMotion) return;
+  flightsStarted = true;
+  (function plane() { setTimeout(() => { flyPlane(); plane(); }, 5000 + Math.random() * 20000); })();
+  (function bird()  { setTimeout(() => { flyBird();  bird();  }, 8000 + Math.random() * 25000); })();
 }
 
 // ────────────────────────────────────────────────────────────
@@ -2000,9 +2117,6 @@ function playReturn(projIdx) {
   // The intro's last frame sits behind the gallery
   setIntroEnd();
 
-  // White background
-  bgLayer.style.backgroundColor = '#ffffff';
-
   view = 'hub';
   isTransitioning = true;
   outers.forEach(o => { o.style.pointerEvents = 'none'; });
@@ -2040,6 +2154,7 @@ function playReturn(projIdx) {
       isTransitioning = false;
       outers.forEach(o => { o.style.pointerEvents = ''; });
       contactTab.classList.add('is-ready');
+      startFlights();
     },
   });
 }
@@ -2048,6 +2163,7 @@ function playReturn(projIdx) {
 // INIT — returning from a project, intro already seen this session, or first landing
 // ────────────────────────────────────────────────────────────
 layoutTrack();
+makeStars();
 buildCarousel();
 document.getElementById('projectBack').addEventListener('click', closeProject);
 
