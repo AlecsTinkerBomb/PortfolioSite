@@ -5,9 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio</title>
   <link rel="icon" href="assets/logo.png" type="image/png">
-  <script>if(sessionStorage.getItem('returnFromProject'))document.documentElement.style.opacity='0';</script>
+  <script>try{var st=history.state;if(sessionStorage.getItem('returnFromProject')||(st&&st.hub!=null))document.documentElement.style.opacity='0';}catch(e){}</script>
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <link rel="prefetch" href="monte-ne-artists-retreat.html">
+  <link rel="prefetch" href="fayetteville-art-hall.html">
+  <link rel="prefetch" href="civil-culinary-center.html">
   <style>
     :root {
       --text-sm:   0.8125rem;
@@ -24,7 +29,7 @@
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { height: 100%; }
+    html { height: 100%; overscroll-behavior: none; }
 
     body {
       font-family: var(--font-ui);
@@ -32,6 +37,7 @@
       color: #111111;
       height: 100%;
       overflow: hidden;
+      overscroll-behavior: none;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -204,11 +210,6 @@
     }
 
 
-    @keyframes bob {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(4px); }
-    }
-
     /* ─── HUB ─── */
     #hub {
       z-index: 50;
@@ -220,25 +221,6 @@
       pointer-events: none;
       background: transparent;
     }
-
-    /* Hub back arrow */
-    .hub-back {
-      position: absolute;
-      top: 24px;
-      left: 32px;
-      z-index: 10;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #999999;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s ease;
-    }
-
-    .hub-back:hover { color: #555555; }
 
     /* ─── CAROUSEL ─── */
     .carousel-wrap {
@@ -402,13 +384,17 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 64px;
-      padding: 80px 0;
       overflow-y: auto;
+      overscroll-behavior: contain;
       opacity: 0;
       pointer-events: none;
     }
+
+    /* Centered when it fits; top-aligned and scrollable when taller than the screen */
+    #info > .info-zone:first-of-type { margin-top: auto; }
+    #info > .info-zone:last-of-type  { margin-bottom: auto; }
 
     .info-up {
       position: absolute;
@@ -568,8 +554,6 @@
       .info-up        { display: none; }
       .scroll-hint    { right: 4%; bottom: 8vh; }
       .info-zone      { height: auto; padding: 32px 0; }
-      .overlay-title  { font-size: var(--text-2xl); }
-      .overlay-panel  { padding: 36px 28px; }
       .site-logo      { height: 36px; top: 32px; right: 20px; }
       .entry-skyline  { width: 170%; left: -35%; height: auto; }
     }
@@ -579,13 +563,8 @@
       .info-up svg {
         animation: none;
       }
-      .enter-btn {
-        transition: none;
-      }
       .info-link,
-      .overlay-close,
-      .info-up,
-      .hub-back {
+      .info-up {
         transition: none;
       }
     }
@@ -620,7 +599,7 @@
 | |_) | | | | |_) || | | |_ | | | | |    | | | | |
 |  __/| |_| |  _ < | | |  _|| |_| | |___ | | |_| |
 |_|    \___/|_| \_\|_| |_|   \___/|_____|___\___/</pre>
-  <img class="entry-skyline" src="assets/cityskyline2.png" alt="" aria-hidden="true" draggable="false" />
+  <img class="entry-skyline" src="assets/cityskyline2.png" alt="" aria-hidden="true" draggable="false" fetchpriority="high" />
 </section>
 
 
@@ -673,7 +652,7 @@
         <p class="info-bio-body">My work spans digital modeling, visualization, and design documentation built with Rhino 8, Revit, Lumion, Enscape, and the Adobe Creative Suite. This site documents my work as I move through the program, a running record of how my thinking and skills evolve.</p>
       </div>
       <div class="info-bio-right">
-        <img src="assets/aboutme2.jpg" alt="Alec Wright" />
+        <img src="assets/aboutme2.jpg" alt="Alec Wright" width="1200" height="1800" loading="lazy" decoding="async" />
       </div>
     </div>
   </div>
@@ -690,7 +669,7 @@
           </svg>
           aleccwright@gmail.com
         </a>
-        <a href="#" class="info-link">
+        <a href="https://www.instagram.com/alec_c_wright/" class="info-link" target="_blank" rel="noopener noreferrer">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
             <rect x="1" y="1" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.2"/>
             <circle cx="7.5" cy="7.5" r="2.8" stroke="currentColor" stroke-width="1.2"/>
@@ -792,16 +771,18 @@
 
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
 <script>
 'use strict';
 
 // ────────────────────────────────────────────────────────────
 // DATA
 // ────────────────────────────────────────────────────────────
+// coverSm is the 1600px copy in assets/sm — all the carousel card needs.
 const PROJECTS = [
-  { name: 'Monte Ne Artists Retreat', seed: 'arch1',     cover: 'assets/p1carouselcover.jpg',  type: 'Architecture', year: 'January – May 2025', url: 'monte-ne-artists-retreat.html' },
+  { name: 'Monte Ne Artists Retreat', seed: 'arch1',     cover: 'assets/p1carouselcover.jpg',  coverSm: 'assets/sm/p1carouselcover.jpg', type: 'Architecture', year: 'January – May 2025', url: 'monte-ne-artists-retreat.html' },
   { name: 'Fayetteville Art Hall',    seed: 'build2',    cover: 'assets/p2carouselcover.jpeg', type: 'Urban Design',  year: '2025', url: 'fayetteville-art-hall.html' },
-  { name: 'Civil Culinary Center',    seed: 'design3',   cover: 'assets/p3carouselcover.jpg',  type: 'Interior',      year: '2023', url: 'civil-culinary-center.html' },
+  { name: 'Civil Culinary Center',    seed: 'design3',   cover: 'assets/p3carouselcover.jpg',  coverSm: 'assets/sm/p3carouselcover.jpg', type: 'Interior',      year: '2023', url: 'civil-culinary-center.html' },
 ];
 
 // ────────────────────────────────────────────────────────────
@@ -809,31 +790,44 @@ const PROJECTS = [
 // ────────────────────────────────────────────────────────────
 const CARD_COUNT = PROJECTS.length;
 const CARD_STEP  = 360 / CARD_COUNT;
+const HOME_ANGLE = 2 * CARD_STEP; // the first reveal lands on Project Three
 
 // ────────────────────────────────────────────────────────────
 // STATE
 // ────────────────────────────────────────────────────────────
-let view            = 'entry'; // 'entry' | 'hub' | 'info'
-let isTransitioning = false;
-let angle           = 0;
-let velocity        = 0;
-let isDragging      = false;
-let lastDragX       = 0;
-let lastDragT       = 0;
-let coastingRaf     = null;
-let snapTween       = null;
+let view             = 'entry'; // 'entry' | 'hub' | 'info'
+let isTransitioning  = false;
+let leavingToProject = false;
+let angle            = 0;
+let velocity         = 0;
+let isDragging       = false;
+let dragMoved        = false;
+let lastDragX        = 0;
+let lastDragT        = 0;
+let coastingRaf      = null;
+let snapTween        = null;
+let spinAnchor       = HOME_ANGLE; // card the ring spins out from / back to between intro and gallery
+let wheelSpinTimer   = null;
+let wheelSpinStart   = 0;
 
 let touchStartX = 0;
 let touchStartY = 0;
 let touchDir    = null;
+let touchMode   = null; // 'native' while a swipe scrolls the About page itself
 
-// Scroll-driven Entry ↔ Info
+// Scroll-driven Entry ↔ Hub ↔ Info
 let scrollProgress    = 0;
 let scrollVelocity    = 0;
+let scrollDir         = 0;    // +1 heading down the pages, -1 heading back up
 let scrollRaf         = null;
+let scrollTween       = null; // glide onto a page
+let settleTimer       = null;
 let scrollTouchStartY = 0;
 let galleryLocked     = false;
+let galleryLockDir    = 1;    // direction the gallery was entered from; that way stays blocked while locked
 let galleryLockTimer  = null;
+let infoScrolledAt    = 0;
+let lastInvert        = -1;
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isTouchDevice = window.matchMedia('(hover: none)').matches;
@@ -842,6 +836,9 @@ const pState = PROJECTS.map(() => ({
   tx: 0, ty: 0,
   tgx: 0, tgy: 0,
   glowColor: null,
+  glowOn: false,
+  front: null,
+  sat: null,
   rafId: null
 }));
 
@@ -850,17 +847,18 @@ const pState = PROJECTS.map(() => ({
 // ────────────────────────────────────────────────────────────
 const bgLayer       = document.getElementById('bgLayer');
 const scrollCanvas  = document.getElementById('scrollCanvas');
-const scrollTrack   = document.getElementById('scrollTrack');
-const entryEl       = document.getElementById('entry');
 const hubEl         = document.getElementById('hub');
 const infoEl        = document.getElementById('info');
 const carouselWrap  = document.getElementById('carouselWrap');
 const carouselRing  = document.getElementById('carouselRing');
 const infoUp        = document.getElementById('infoUp');
 const skylineEl     = document.querySelector('.entry-skyline');
-const outers = [], tilts = [], shines = [];
+const entryAsciiEl  = document.querySelector('.entry-ascii');
+const planeEl       = document.getElementById('entryPlane');
+const birdEl        = document.getElementById('entryBird');
+const outers = [], parts = [];
 
-const REVEAL_SPIN = -120; // ring starts 120° off and arrives at Project 1 (angle=0) when fully revealed
+const REVEAL_SPIN = -120; // ring starts 120° off and arrives at its card when fully revealed
 
 // ────────────────────────────────────────────────────────────
 // AUDIO
@@ -888,6 +886,11 @@ function cardDims() {
 function normAngle(a) {
   a = ((a % 360) + 360) % 360;
   return a > 180 ? a - 360 : a;
+}
+
+function frontIndex() {
+  const i = Math.round(angle / CARD_STEP) % CARD_COUNT;
+  return (i + CARD_COUNT) % CARD_COUNT;
 }
 
 // ────────────────────────────────────────────────────────────
@@ -922,11 +925,19 @@ function buildCarousel() {
 
     const img = document.createElement('img');
     img.crossOrigin = 'anonymous';
-    img.alt     = proj.name;
-    img.loading = 'lazy';
+    img.alt      = proj.name;
+    img.decoding = 'async';
+    if (proj.coverSm) {
+      img.sizes  = '(max-width: 639px) 225px, 480px';
+      img.srcset = `${proj.coverSm} 1600w, ${proj.cover} 3200w`;
+    }
     img.src = proj.cover
       ? proj.cover
       : `https://picsum.photos/seed/${proj.seed}/960/540`;
+    img.addEventListener('load', () => {
+      pState[i].glowColor = null;
+      if (view === 'hub' && pState[i].front) glowIn(i);
+    });
 
     const gradient = document.createElement('div');
     gradient.className = 'c-gradient';
@@ -934,6 +945,8 @@ function buildCarousel() {
     const shine = document.createElement('div');
     shine.className = 'c-shine';
     shine.setAttribute('aria-hidden', 'true');
+    shine.style.background =
+      'radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.13) 0%, transparent 65%)';
 
     const label = document.createElement('div');
     label.className = 'c-label';
@@ -956,25 +969,32 @@ function buildCarousel() {
     carouselRing.appendChild(outer);
 
     outers.push(outer);
-    tilts.push(tilt);
-    shines.push(shine);
+    parts.push({
+      outer, scaleEl: scale, tilt, card, img, glow, shadow, shine,
+      scaleTo: gsap.quickTo(scale, 'scale', { duration: 0.3, ease: 'power2.out' }),
+    });
 
-    card.addEventListener('pointerup', () => {
-      if (isDragging) return;
+    // Click / tap: a side card turns to the front, the front card opens
+    card.addEventListener('click', () => {
+      if (isDragging || dragMoved || view !== 'hub') return;
       const na = normAngle(i * CARD_STEP - angle);
       if (Math.abs(na) >= CARD_STEP * 0.55) {
         snapToIndex(i);
+        return;
       }
-    });
-
-    card.addEventListener('click', () => {
-      if (isDragging) return;
-      if (view !== 'hub') return;
-      const outer = card.closest('.c-outer');
       const zi = parseInt(outer.style.zIndex || '0');
       if (zi < 45) return;
       if (!proj.cover) return;
-      openProject(proj, card);
+      openProject(proj, card, i);
+    });
+
+    // Keyboard: Enter / Space act like a click
+    card.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      if (view !== 'hub') return;
+      if (frontIndex() === i) openProject(proj, card, i);
+      else snapToIndex(i);
     });
 
     if (!isTouchDevice) {
@@ -1011,97 +1031,75 @@ window.addEventListener('resize', () => {
 // ────────────────────────────────────────────────────────────
 function updateRing() {
   const { r } = cardDims();
-  outers.forEach((outer, i) => {
+  parts.forEach((pt, i) => {
     const ca    = i * CARD_STEP - angle;
     const rad   = ca * Math.PI / 180;
     const cos   = Math.cos(rad);
     const depth = (cos + 1) / 2; // 0 = back, 1 = front
 
-    const scale      = 0.78 + depth * 0.22;
-    const zi         = Math.round((cos + 1) * 50);
-
-    outer.style.transform = `rotateY(${ca}deg) translateZ(${r}px)`;
-    outer.style.zIndex    = zi;
-    const scaleEl = outer.querySelector('.c-scale');
+    const scale   = 0.78 + depth * 0.22;
+    const zi      = Math.round((cos + 1) * 50);
     const isFront = depth > 0.95;
+    const s       = pState[i];
 
-    const sat = isFront ? 1.0 : 0.45;
-    scaleEl.style.filter = `saturate(${sat})`;
+    pt.outer.style.transform = `rotateY(${ca}deg) translateZ(${r}px)`;
+    pt.outer.style.zIndex    = zi;
 
-    if (view === 'hub') {
-
-      const shadowEl = outer.querySelector('.c-shadow');
-      if (shadowEl) {
-        gsap.to(shadowEl, {
-          opacity: isFront ? 1 : 0,
-          duration: 0.5,
-          ease: 'power2.out',
-          overwrite: 'auto'
-        });
-      }
-      const glowEl  = outer.querySelector('.c-glow');
-      const tiltEl  = outer.querySelector('.c-tilt');
-      const shineEl = outer.querySelector('.c-shine');
-      const s       = pState[i];
-
-      if (isFront) {
-        gsap.to(scaleEl, { scale: 1.06, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
-        shineEl.style.background =
-          'radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.13) 0%, transparent 65%)';
-        gsap.to(shineEl, { opacity: 1, duration: 0.35, overwrite: 'auto' });
-        if (!s.glowColor) {
-          const img = outer.querySelector('img');
-          if (img && img.complete) s.glowColor = sampleImageColor(img);
-        }
-        if (glowEl && s.glowColor) {
-          glowEl.style.background = s.glowColor;
-          gsap.to(glowEl, { opacity: 0.85, duration: 1.8, ease: 'power2.out', overwrite: 'auto' });
-        }
-      } else {
-        gsap.to(scaleEl, { scale, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-        gsap.to(s, {
-          tx: 0, ty: 0, duration: 0.3, ease: 'power2.out', overwrite: 'auto',
-          onUpdate: () => { tiltEl.style.transform = `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`; }
-        });
-        gsap.to(shineEl, { opacity: 0, duration: 0.3, overwrite: 'auto' });
-        if (glowEl) {
-          gsap.killTweensOf(glowEl);
-          gsap.to(glowEl, { opacity: 0, duration: 0.3, overwrite: 'auto' });
-        }
-      }
+    if (s.sat !== isFront) {
+      s.sat = isFront;
+      pt.scaleEl.style.filter = `saturate(${isFront ? 1.0 : 0.45})`;
     }
 
+    if (view !== 'hub') return;
+
+    // Front-card effects only start or stop when a card enters or leaves the front
+    pt.scaleTo(isFront ? 1.06 : scale);
+    if (s.front !== isFront) {
+      s.front = isFront;
+      gsap.to(pt.shadow, { opacity: isFront ? 1 : 0, duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
+      gsap.to(pt.shine,  { opacity: isFront ? 1 : 0, duration: isFront ? 0.35 : 0.3, overwrite: 'auto' });
+      if (!isFront) {
+        gsap.to(s, {
+          tx: 0, ty: 0, duration: 0.3, ease: 'power2.out', overwrite: 'auto',
+          onUpdate: () => { pt.tilt.style.transform = `rotateX(${s.tx}deg) rotateY(${s.ty}deg)`; }
+        });
+      }
+    }
+    if (isFront && !s.glowOn) glowIn(i);
+    else if (!isFront && s.glowOn) glowOut(i);
+  });
+}
+
+// ────────────────────────────────────────────────────────────
+// GLOW
+// ────────────────────────────────────────────────────────────
+function glowIn(i) {
+  const pt = parts[i], s = pState[i];
+  if (!s.glowColor && pt.img.complete && pt.img.naturalWidth) s.glowColor = sampleImageColor(pt.img);
+  if (!s.glowColor) return;
+  s.glowOn = true;
+  pt.glow.style.background = s.glowColor;
+  gsap.to(pt.glow, { opacity: 0.85, duration: 1.8, ease: 'power2.out', overwrite: 'auto' });
+}
+
+function glowOut(i) {
+  pState[i].glowOn = false;
+  gsap.to(parts[i].glow, { opacity: 0, duration: 0.3, overwrite: 'auto' });
+}
+
+function fadeGlows(duration) {
+  parts.forEach((pt, i) => {
+    pState[i].glowOn = false;
+    gsap.to(pt.glow, { opacity: 0, duration, overwrite: 'auto' });
   });
 }
 
 // ────────────────────────────────────────────────────────────
 // SNAP
 // ────────────────────────────────────────────────────────────
-function snapToNearest() {
-  document.querySelectorAll('.c-glow').forEach(g => {
-    gsap.to(g, { opacity: 0, duration: 0.2 });
-  });
-  if (isTransitioning) return;
+function spinRingTo(dest) {
   if (snapTween) snapTween.kill();
-  const nearest = Math.round(angle / CARD_STEP) * CARD_STEP;
   const proxy = { v: angle };
-  snapTween = gsap.to(proxy, {
-    v: nearest,
-    duration: 2.0,
-    ease: 'elastic.out(1, 0.75)',
-    onUpdate() { angle = proxy.v; updateRing(); },
-  });
-}
-
-function snapToIndex(idx) {
-  document.querySelectorAll('.c-glow').forEach(g => {
-    gsap.to(g, { opacity: 0, duration: 0.2 });
-  });
-  if (snapTween) snapTween.kill();
-  const target = idx * CARD_STEP;
-  const diff   = ((target - angle) % 360 + 540) % 360 - 180;
-  const dest   = angle + diff;
-  const proxy  = { v: angle };
   snapTween = gsap.to(proxy, {
     v: dest,
     duration: 2.0,
@@ -1110,17 +1108,27 @@ function snapToIndex(idx) {
   });
 }
 
+function snapToNearest() {
+  fadeGlows(0.2);
+  if (isTransitioning) return;
+  spinRingTo(Math.round(angle / CARD_STEP) * CARD_STEP);
+}
+
+function snapToIndex(idx) {
+  fadeGlows(0.2);
+  const target = idx * CARD_STEP;
+  const diff   = ((target - angle) % 360 + 540) % 360 - 180;
+  spinRingTo(angle + diff);
+}
+
 // ────────────────────────────────────────────────────────────
 // DRAG — MOUSE
 // ────────────────────────────────────────────────────────────
 let dragStartX = 0;
-let dragMoved  = false;
 
 carouselWrap.addEventListener('mousedown', (e) => {
-  document.querySelectorAll('.c-glow').forEach(g => {
-    gsap.to(g, { opacity: 0, duration: 0.15 });
-  });
-  if (view !== 'hub') return;
+  if (view !== 'hub' || e.button !== 0) return;
+  fadeGlows(0.15);
   if (snapTween) snapTween.kill();
   cancelAnimationFrame(coastingRaf);
   isDragging = true;
@@ -1155,9 +1163,7 @@ window.addEventListener('mouseup', () => {
 // COASTING INERTIA
 // ────────────────────────────────────────────────────────────
 function startCoast() {
-  document.querySelectorAll('.c-glow').forEach(g => {
-    gsap.to(g, { opacity: 0, duration: 0.2 });
-  });
+  fadeGlows(0.2);
   if (prefersReducedMotion || Math.abs(velocity) < 0.3) {
     snapToNearest();
     return;
@@ -1235,83 +1241,84 @@ function hideHintOnce() {
   if (hintEl) hintEl.style.opacity = '0';
   window.removeEventListener('wheel',      hideHintOnce);
   window.removeEventListener('touchstart', hideHintOnce);
+  window.removeEventListener('keydown',    hideHintOnce);
 }
 window.addEventListener('wheel',      hideHintOnce, { passive: true });
 window.addEventListener('touchstart', hideHintOnce, { passive: true });
+window.addEventListener('keydown',    hideHintOnce);
 
 // ────────────────────────────────────────────────────────────
-// WHEEL — hub guard + Entry/Info physical scroll
+// WHEEL — page scroll; sideways swipes turn the carousel
 // ────────────────────────────────────────────────────────────
 window.addEventListener('wheel', (e) => {
-  if (isTransitioning) { e.preventDefault(); return; }
-  if (view === 'hub') {
-    e.preventDefault();
-    if (e.deltaY < 0) {
-      // scroll up → back to entry, always allowed
-      view = 'entry';
-      outers.forEach(o => { o.style.pointerEvents = 'none'; });
-      if (snapTween) snapTween.kill();
-      galleryLocked = false;
-      clearTimeout(galleryLockTimer);
-      scrollVelocity += e.deltaY * 0.000085;
-      scrollVelocity = Math.max(-0.022, Math.min(0.022, scrollVelocity));
-      startScrollLoop();
-    } else if (!galleryLocked) {
-      // scroll down → only allowed after lock expires
-      scrollVelocity += e.deltaY * 0.000085;
-      scrollVelocity = Math.max(-0.022, Math.min(0.022, scrollVelocity));
-      startScrollLoop();
-    }
-    return;
-  }
-  if (isTransitioning) { e.preventDefault(); return; }
-  if (view !== 'entry' && view !== 'info') return;
+  if (isTransitioning || leavingToProject) { e.preventDefault(); return; }
+
+  // Line / page deltas (Firefox mouse wheels) → pixels
+  const unit = e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? window.innerHeight : 1;
+  const dx = e.deltaX * unit;
+  const dy = e.deltaY * unit;
+
+  // About page taller than the screen: it scrolls itself first…
+  if (view === 'info' && infoCanScroll(dy)) { infoScrolledAt = performance.now(); return; }
   e.preventDefault();
-  scrollVelocity += e.deltaY * 0.000085;
-  scrollVelocity = Math.max(-0.022, Math.min(0.022, scrollVelocity));
-  startScrollLoop();
+  // …and the momentum tail of that scroll doesn't carry on into the gallery
+  if (view === 'info' && performance.now() - infoScrolledAt < 250) { infoScrolledAt = performance.now(); return; }
+
+  if (view === 'hub' && scrollProgress === 1 && Math.abs(dx) > Math.abs(dy)) { spinByWheel(dx); return; }
+  if (Math.abs(dy) < 4) return; // trackpad noise
+  pushScroll(dy * 0.000085, 0.022);
 }, { passive: false });
 
+// Trackpad sideways swipe (or Shift + wheel) turns the carousel, settling on the next card
+function spinByWheel(dx) {
+  if (!wheelSpinTimer) {
+    fadeGlows(0.15);
+    wheelSpinStart = Math.round(angle / CARD_STEP) * CARD_STEP;
+  }
+  if (snapTween) snapTween.kill();
+  cancelAnimationFrame(coastingRaf);
+  angle += dx * 0.22;
+  updateRing();
+  clearTimeout(wheelSpinTimer);
+  wheelSpinTimer = setTimeout(() => {
+    wheelSpinTimer = null;
+    const moved = angle - wheelSpinStart;
+    const cards = Math.abs(moved) < 12 ? 0 : Math.max(1, Math.round(Math.abs(moved) / CARD_STEP));
+    spinRingTo(wheelSpinStart + Math.sign(moved) * cards * CARD_STEP);
+  }, 140);
+}
+
+function infoCanScroll(dy) {
+  if (scrollProgress < 2 || !dy) return false;
+  const max = infoEl.scrollHeight - infoEl.clientHeight;
+  if (max <= 1) return false;
+  return dy > 0 ? infoEl.scrollTop < max - 1 : infoEl.scrollTop > 0;
+}
+
 // ────────────────────────────────────────────────────────────
-// TOUCH — Entry/Info physical scroll
+// TOUCH — Entry/Hub/Info page scroll
 // ────────────────────────────────────────────────────────────
 window.addEventListener('touchstart', (e) => {
-  if (view === 'hub' || view === 'entry' || view === 'info') {
-    scrollTouchStartY = e.touches[0].clientY;
-  }
+  scrollTouchStartY = e.touches[0].clientY;
+  touchMode = null;
 }, { passive: true });
 
 window.addEventListener('touchmove', (e) => {
-  if (isTransitioning) { e.preventDefault(); return; }
-  if (view === 'hub') {
-    e.preventDefault();
-    if (touchDir === 'h') return; // horizontal carousel swipe — don't interfere
-    const dy = scrollTouchStartY - e.touches[0].clientY;
-    scrollTouchStartY = e.touches[0].clientY;
-    if (Math.abs(dy) < 6) return; // ignore tiny vertical drift during swipe
-    if (dy > 0 && !galleryLocked) { // swipe up from hub = go forward to info (only if unlocked)
-      scrollVelocity += dy * 0.00012;
-      scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
-      startScrollLoop();
-    } else if (dy < 0) { // swipe down from hub = go back to entry, always allowed
-      view = 'entry';
-      outers.forEach(o => { o.style.pointerEvents = 'none'; });
-      if (snapTween) snapTween.kill();
-      galleryLocked = false;
-      clearTimeout(galleryLockTimer);
-      scrollVelocity += dy * 0.00012;
-      scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
-      startScrollLoop();
-    }
-    return;
-  }
-  if (view !== 'entry' && view !== 'info') return;
-  const dy = scrollTouchStartY - e.touches[0].clientY;
-  scrollTouchStartY = e.touches[0].clientY;
-  scrollVelocity += dy * 0.00012;
-  scrollVelocity = Math.max(-0.06, Math.min(0.06, scrollVelocity));
-  startScrollLoop();
+  if (isTransitioning || leavingToProject) { e.preventDefault(); return; }
+  const y  = e.touches[0].clientY;
+  const dy = scrollTouchStartY - y;
+
+  // A swipe that starts on a scrollable About page scrolls it natively for the whole gesture
+  if (touchMode === null && view === 'info' && dy) touchMode = infoCanScroll(dy) ? 'native' : 'pages';
+  if (touchMode === 'native') return;
   e.preventDefault();
+
+  if (view === 'hub') {
+    if (touchDir === 'h') return; // horizontal carousel swipe — don't interfere
+    if (Math.abs(dy) < 6) return; // ignore tiny vertical drift during swipe
+  }
+  scrollTouchStartY = y;
+  pushScroll(dy * 0.00012, 0.06);
 }, { passive: false });
 
 // ────────────────────────────────────────────────────────────
@@ -1322,42 +1329,36 @@ function applyScrollState(p) {
   const hubT  = Math.max(0, Math.min(1, p));        // 0→1 as gallery slides in (p: 0→1)
   const infoT = Math.max(0, Math.min(1, p - 1));    // 0→1 as info slides in (p: 1→2)
 
-  // A: Track stays static — entry is always at p=0, no physical track movement needed
-
   // B: bgLayer inverts from dark→light as gallery slides in, then light→dark for info
   if (p <= 1) {
     const v = Math.round(17 + (238 - 17) * hubT);
     bgLayer.style.backgroundColor = `rgb(${v},${v},${v})`;
   } else {
-    const darkRatio = Math.max(0, Math.min(1, p - 1));
-    const v = Math.round(238 + (30 - 238) * darkRatio);
+    const v = Math.round(238 + (30 - 238) * infoT);
     bgLayer.style.backgroundColor = `rgb(${v},${v},${v})`;
   }
 
   // B2: Invert entry canvas (ASCII + skyline) progressively as gallery slides in
-  const scrollCanvasEl = document.getElementById('scrollCanvas');
-  if (scrollCanvasEl) scrollCanvasEl.style.filter = `invert(${hubT})`;
+  if (hubT !== lastInvert) {
+    lastInvert = hubT;
+    scrollCanvas.style.filter = `invert(${hubT})`;
+  }
 
-  // B3: Skyline fades from 100% → 50% opacity as gallery slides in, stays at 50%
-  if (skylineEl) skylineEl.style.opacity = String((1.0 - hubT * 0.95) * (1 - infoT));
+  // B3: Skyline fades from 100% → 5% as gallery slides in, then out for info
+  skylineEl.style.opacity = String((1.0 - hubT * 0.95) * (1 - infoT));
 
   // B4: ASCII fades out going to about me
+  entryAsciiEl.style.opacity = String(Math.max(0, 1 - infoT * 2));
 
-  const entryAsciiEl = document.querySelector('.entry-ascii');
-  if (entryAsciiEl) entryAsciiEl.style.opacity = String(Math.max(0, 1 - infoT * 2));
-
-  const planeEl = document.getElementById('entryPlane');
-  if (planeEl && infoT > 0) planeEl.style.opacity = '0';
-  const birdEl = document.getElementById('entryBird');
-  if (birdEl && infoT > 0) birdEl.style.opacity = '0';
+  if (infoT > 0) {
+    planeEl.style.opacity = '0';
+    birdEl.style.opacity  = '0';
+  }
 
   // C: Info back arrow fades in when fully on info page
-  const infoUpEl = document.getElementById('infoUp');
-  if (infoUpEl) {
-    const arrowOpacity = Math.max(0, (infoT - 0.9) / 0.1);
-    infoUpEl.style.opacity = arrowOpacity;
-    infoUpEl.style.pointerEvents = arrowOpacity > 0.05 ? 'auto' : 'none';
-  }
+  const arrowOpacity = Math.max(0, (infoT - 0.9) / 0.1);
+  infoUp.style.opacity = arrowOpacity;
+  infoUp.style.pointerEvents = arrowOpacity > 0.05 ? 'auto' : 'none';
 
   // E: Hub slides up from bottom (p: 0→1), exits upward off-screen (p: 1→2)
   const hubTranslateY = p <= 1
@@ -1374,9 +1375,18 @@ function applyScrollState(p) {
   infoEl.style.pointerEvents = p >= 2 ? 'auto' : 'none';
   if (p >= 2 && view !== 'info') view = 'info';
 
+  // Only the page at rest can be tabbed into or read out
+  const hubInert  = Math.abs(p - 1) > 0.02;
+  const infoInert = p < 1.98;
+  if (hubEl.inert !== hubInert)   hubEl.inert  = hubInert;
+  if (infoEl.inert !== infoInert) infoEl.inert = infoInert;
+
+  // Back at the intro: the next reveal lands on Project Three again
+  if (p <= 0) spinAnchor = HOME_ANGLE;
+
   // G: Ring angle — spins in on entry only, no spin on exit
   if (infoT === 0 && hubT > 0 && view !== 'hub') {
-    angle = 2 * CARD_STEP + REVEAL_SPIN * (1 - hubT);
+    angle = spinAnchor + REVEAL_SPIN * (1 - hubT);
     updateRing();
   }
 }
@@ -1391,25 +1401,17 @@ function scrollLoop() {
   scrollProgress += scrollVelocity;
   scrollVelocity *= 0.96;
 
-  // Hard stop at p=1 (gallery) — intercept any crossing going forward
-  if (prev < 1 && scrollProgress >= 1 && !galleryLocked) {
-    scrollProgress = 1;
-    scrollVelocity = 0;
+  // Hard stop at p=1 (gallery) from either side, so one flick never skips past it
+  if (!galleryLocked && ((prev < 1 && scrollProgress >= 1) || (prev > 1 && scrollProgress <= 1))) {
     scrollRaf = null;
-    view = 'hub';
-    outers.forEach(o => { o.style.pointerEvents = ''; });
-    galleryLocked = true;
-    clearTimeout(galleryLockTimer);
-    galleryLockTimer = setTimeout(() => { galleryLocked = false; }, 1000);
-    showCarouselHint();
-    applyScrollState(1);
+    arriveAtHub(prev < 1 ? 1 : -1);
     return;
   }
 
-  // While locked, prevent scrollProgress from going past 1
-  if (galleryLocked && scrollProgress > 1) {
+  // While locked, the gallery can't be pushed on in the direction it was entered from
+  if (galleryLocked && (scrollProgress - 1) * galleryLockDir > 0) {
     scrollProgress = 1;
-    scrollVelocity = Math.min(0, scrollVelocity);
+    scrollVelocity = 0;
   }
 
   scrollProgress = Math.max(0, Math.min(2, scrollProgress));
@@ -1417,95 +1419,143 @@ function scrollLoop() {
 
   if (Math.abs(scrollVelocity) < 0.00003) {
     scrollRaf = null;
-    if (scrollProgress <= 0.05) {
-      view = 'entry';
-    } else if (Math.abs(scrollProgress - 1) < 0.06) {
-      view = 'hub';
-    } else if (scrollProgress > 1.05) {
-      if (scrollProgress >= 1.5) snapTo(2);
-      else                        snapTo(1);
-    } else {
-      view = 'entry';
-    }
     return;
   }
   scrollRaf = requestAnimationFrame(scrollLoop);
 }
 
-function snapTo(target) {
+// One push of scroll input (wheel notch or touch move) toward the next / previous page
+function pushScroll(delta, cap) {
+  if (view === 'hub' && scrollProgress === 1) {
+    // Just arrived: the same flick can't carry straight on through the gallery
+    if (galleryLocked && Math.sign(delta) === galleryLockDir) return;
+    leaveHub(Math.sign(delta));
+  }
+  if (scrollTween) { scrollTween.kill(); scrollTween = null; }
+  scrollDir      = Math.sign(delta);
+  scrollVelocity = Math.max(-cap, Math.min(cap, scrollVelocity + delta));
+  startScrollLoop();
+  scheduleSettle();
+}
+
+// When scroll input stops between two pages, glide on to the one the user was heading for
+function scheduleSettle() {
+  clearTimeout(settleTimer);
+  settleTimer = setTimeout(settleScroll, 160);
+}
+
+function settleScroll() {
+  if (isTransitioning || leavingToProject || scrollTween) return;
+  const p = scrollProgress;
+  if (p <= 0 || p >= 2 || p === 1) return;
+  const base = p < 1 ? 0 : 1;
+  const t = p - base;
+  const target = scrollDir > 0
+    ? (t > 0.08 ? base + 1 : base)
+    : (t < 0.92 ? base : base + 1);
+  snapTo(target, 0.3 + 0.55 * Math.abs(target - p), 'power2.out');
+}
+
+function snapTo(target, duration = 0.65, ease = 'power3.out') {
   cancelAnimationFrame(scrollRaf);
   scrollRaf = null;
+  clearTimeout(settleTimer);
+  scrollVelocity = 0;
+  if (scrollTween) scrollTween.kill();
+  if (view === 'hub' && target !== 1) leaveHub(target < 1 ? -1 : 1);
 
-  const pObj = { p: scrollProgress };
-  gsap.to(pObj, {
+  const from = scrollProgress;
+  const pObj = { p: from };
+  scrollTween = gsap.to(pObj, {
     p: target,
-    duration: 0.65,
-    ease: 'power3.out',
+    duration,
+    ease,
     onUpdate() {
       scrollProgress = pObj.p;
       applyScrollState(scrollProgress);
     },
     onComplete() {
+      scrollTween = null;
       if (target === 0) {
         view = 'entry';
         isTransitioning = false;
         outers.forEach(o => { o.style.pointerEvents = ''; });
       } else if (target === 1) {
-        view = 'hub';
-        isTransitioning = false;
-        outers.forEach(o => { o.style.pointerEvents = ''; });
-        showCarouselHint();
-        galleryLocked = true;
-        clearTimeout(galleryLockTimer);
-        galleryLockTimer = setTimeout(() => { galleryLocked = false; }, 1000);
+        arriveAtHub(from < 1 ? 1 : -1);
       } else {
         view = 'info';
       }
     },
   });
-
 }
 
-// ────────────────────────────────────────────────────────────
-// KEYBOARD CAROUSEL NAV
-// ────────────────────────────────────────────────────────────
-carouselWrap.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight') {
-    e.preventDefault();
-    angle += CARD_STEP;
-    updateRing();
-    snapToNearest();
-  }
-  if (e.key === 'ArrowLeft') {
-    e.preventDefault();
-    angle -= CARD_STEP;
-    updateRing();
-    snapToNearest();
-  }
-});
+function goToPage(target) {
+  snapTo(target, 1.1, 'power2.inOut');
+}
 
-// ────────────────────────────────────────────────────────────
-// VIEW TRANSITIONS
-// ────────────────────────────────────────────────────────────
-function triggerToEntry_fromHub() {
-  if (view !== 'hub') return;
-  view = 'entry';
-  if (snapTween) snapTween.kill();
-  outers.forEach(o => { o.style.pointerEvents = 'none'; });
+function arriveAtHub(fromDir) {
+  scrollProgress = 1;
+  scrollVelocity = 0;
+  view = 'hub';
+  isTransitioning = false;
+  outers.forEach(o => { o.style.pointerEvents = ''; });
+  galleryLocked  = true;
+  galleryLockDir = fromDir;
+  clearTimeout(galleryLockTimer);
+  galleryLockTimer = setTimeout(() => { galleryLocked = false; }, 1000);
+  applyScrollState(1);
+  updateRing();
+  showCarouselHint();
+}
+
+// Leaving the gallery: remember the front card so the ring spins out (and back in) from it
+function leaveHub(dir) {
+  spinAnchor = Math.round(angle / CARD_STEP) * CARD_STEP;
   galleryLocked = false;
   clearTimeout(galleryLockTimer);
-  snapTo(0);
+  if (dir < 0) {
+    view = 'entry';
+    outers.forEach(o => { o.style.pointerEvents = 'none'; });
+    if (snapTween) snapTween.kill();
+  }
 }
 
-function triggerToInfo_fromEntry() {
-  if (view !== 'entry') return;
-  snapTo(2);
-}
+// ────────────────────────────────────────────────────────────
+// KEYBOARD — ←/→ turn the carousel, ↑/↓ PgUp/PgDn Space Home/End move between pages
+// ────────────────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.altKey || e.ctrlKey || e.metaKey || isTransitioning || leavingToProject) return;
+  const k = e.key;
 
-function triggerToHub_fromInfo() {
-  if (view !== 'info') return;
-  snapTo(1);
-}
+  if ((k === 'ArrowLeft' || k === 'ArrowRight') && view === 'hub' && scrollProgress === 1) {
+    e.preventDefault();
+    const next = (frontIndex() + (k === 'ArrowRight' ? 1 : -1) + CARD_COUNT) % CARD_COUNT;
+    snapToIndex(next);
+    if (carouselWrap.contains(document.activeElement)) parts[next].card.focus({ preventScroll: true });
+    return;
+  }
+
+  let step = 0;
+  if (k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && !e.shiftKey)) step = 1;
+  else if (k === 'ArrowUp' || k === 'PageUp' || (k === ' ' && e.shiftKey)) step = -1;
+  else if (k === 'Home') step = -2;
+  else if (k === 'End')  step = 2;
+  if (!step) return;
+  if (k === ' ' && e.target.closest && e.target.closest('a, button, [role="button"]')) return;
+
+  // About page taller than the screen: scroll it first
+  if (view === 'info' && Math.abs(step) === 1 && infoCanScroll(step)) {
+    e.preventDefault();
+    const by = k.startsWith('Arrow') ? 80 : infoEl.clientHeight * 0.85;
+    infoEl.scrollBy({ top: step * by, behavior: 'smooth' });
+    return;
+  }
+
+  const here   = Math.round(scrollProgress);
+  const target = Math.max(0, Math.min(2, here + step));
+  e.preventDefault();
+  if (target !== here || scrollTween) goToPage(target);
+});
 
 // ────────────────────────────────────────────────────────────
 // APPLE TV PARALLAX
@@ -1586,9 +1636,14 @@ function sampleImageColor(img) {
 // ────────────────────────────────────────────────────────────
 let activeProjectCard = null;
 
-function openProject(proj, cardEl) {
-  if (!proj.cover) return;
+function openProject(proj, cardEl, idx) {
+  if (!proj.cover || leavingToProject) return;
   activeProjectCard = cardEl;
+  if (proj.url) {
+    leavingToProject = true;
+    // Browser Back from the project page should land on this card in the gallery
+    try { history.replaceState({ hub: idx }, ''); } catch (e) {}
+  }
 
   const page  = document.getElementById('projectPage');
   const cover = document.getElementById('projectCoverImg');
@@ -1596,7 +1651,9 @@ function openProject(proj, cardEl) {
   const date  = document.getElementById('projectDate');
   const back  = document.getElementById('projectBack');
 
-  cover.src = proj.cover;
+  // Expand from the image the card is already showing, so the transition never waits on a download
+  const shown = cardEl.querySelector('img');
+  cover.src = (shown && shown.currentSrc) || proj.cover;
   title.textContent = proj.name;
   date.textContent  = proj.year;
   gsap.set([title, date, back], { opacity: 0 });
@@ -1679,25 +1736,20 @@ function closeProject() {
   });
 }
 
+// Put the expanded cover away instantly (used when the page comes back from the back/forward cache)
+function resetProjectOverlay() {
+  const page  = document.getElementById('projectPage');
+  const cover = document.getElementById('projectCoverImg');
+  gsap.killTweensOf(cover);
+  gsap.set(page, { opacity: 0, pointerEvents: 'none' });
+  gsap.set(cover, { clipPath: 'none' });
+  activeProjectCard = null;
+}
+
 // ────────────────────────────────────────────────────────────
 // BUTTON WIRING
 // ────────────────────────────────────────────────────────────
-
-
-infoUp.addEventListener('click', () => {
-  gsap.to({ p: scrollProgress }, {
-    p: 1,
-    duration: 1.1,
-    ease: 'power2.inOut',
-    onUpdate: function() {
-      scrollProgress = this.targets()[0].p;
-      applyScrollState(scrollProgress);
-    },
-    onComplete: () => {
-      view = 'hub';
-    },
-  });
-});
+infoUp.addEventListener('click', () => goToPage(1));
 
 // ────────────────────────────────────────────────────────────
 // CAROUSEL HINT
@@ -1719,24 +1771,42 @@ function showCarouselHint() {
 // ────────────────────────────────────────────────────────────
 applyScrollState(scrollProgress);
 buildCarousel();
-resizeCards();
-updateRing();
 document.getElementById('projectBack').addEventListener('click', closeProject);
 
 // ────────────────────────────────────────────────────────────
 // RETURN FROM PROJECT PAGE — gallery slides in from top
+// Triggered by the project page's Gallery button (sessionStorage)
+// or by the browser Back button (history state set in openProject).
 // ────────────────────────────────────────────────────────────
-(function handleReturnFromProject() {
-  const raw = sessionStorage.getItem('returnFromProject');
-  if (!raw) return;
-  sessionStorage.removeItem('returnFromProject');
+function pendingReturnIndex() {
+  let idx = null;
+  try {
+    const raw = sessionStorage.getItem('returnFromProject');
+    if (raw) {
+      sessionStorage.removeItem('returnFromProject');
+      idx = JSON.parse(raw).index;
+    }
+  } catch (e) {}
+  try {
+    const st = history.state;
+    if (st && st.hub != null) {
+      if (idx == null) idx = st.hub;
+      history.replaceState(null, '');
+    }
+  } catch (e) {}
+  return PROJECTS[idx] ? idx : null;
+}
 
-  let projIdx;
-  try { projIdx = JSON.parse(raw).index; }
-  catch (e) { document.documentElement.style.opacity = ''; return; }
-
-  const proj = PROJECTS[projIdx];
-  if (!proj) { document.documentElement.style.opacity = ''; return; }
+function playReturn(projIdx) {
+  // Stop anything still in flight from before the page was left
+  cancelAnimationFrame(scrollRaf);
+  scrollRaf = null;
+  if (scrollTween) { scrollTween.kill(); scrollTween = null; }
+  clearTimeout(settleTimer);
+  if (snapTween) snapTween.kill();
+  cancelAnimationFrame(coastingRaf);
+  isDragging = false;
+  scrollVelocity = 0;
 
   // White background
   bgLayer.style.backgroundColor = '#ffffff';
@@ -1781,12 +1851,34 @@ document.getElementById('projectBack').addEventListener('click', closeProject);
       applyScrollState(1);
       isTransitioning = false;
       outers.forEach(o => { o.style.pointerEvents = ''; });
-      galleryLocked = true;
+      galleryLocked  = true;
+      galleryLockDir = 1;
       clearTimeout(galleryLockTimer);
       galleryLockTimer = setTimeout(() => { galleryLocked = false; }, 1000);
     },
   });
+}
+
+(function handleReturnFromProject() {
+  const idx = pendingReturnIndex();
+  if (idx == null) { document.documentElement.style.opacity = ''; return; }
+  playReturn(idx);
 })();
+
+// Leaving for a project: hide the page so a Back-button restore never shows the expanded cover…
+window.addEventListener('pagehide', () => {
+  if (leavingToProject) document.documentElement.style.opacity = '0';
+});
+
+// …and when the browser restores this page from its back/forward cache, play the return instead
+window.addEventListener('pageshow', (e) => {
+  if (!e.persisted || !leavingToProject) return;
+  leavingToProject = false;
+  resetProjectOverlay();
+  const idx = pendingReturnIndex();
+  if (idx == null) { document.documentElement.style.opacity = ''; return; }
+  playReturn(idx);
+});
 
 // ────────────────────────────────────────────────────────────
 // PLANE ANIMATION — side-view ASCII, steps across like spacebar

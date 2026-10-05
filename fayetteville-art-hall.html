@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fayetteville Art Hall — AW</title>
   <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -35,6 +37,7 @@
       top: 0; left: 0;
       width: 100%; height: 100vh;
       object-fit: cover;
+      will-change: opacity;
       z-index: 0;
     }
 
@@ -51,20 +54,33 @@
       position: fixed;
       top: 28px;
       left: 32px;
-      z-index: 2;
+      z-index: 3;
       display: flex;
       align-items: center;
       gap: 8px;
+      padding: 8px 14px;
+      margin: -8px -14px;
+      border-radius: 999px;
       font-family: var(--font-ui);
       font-size: var(--text-sm);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.75);
       text-decoration: none;
-      transition: color 0.2s ease;
+      transition: color 0.2s ease, background-color 0.25s ease;
     }
 
     .back-btn:hover { color: #ffffff; }
+
+    /* Over the white content panel: dark pill so it stays readable */
+    .back-btn.on-panel {
+      color: rgba(255,255,255,0.9);
+      background-color: rgba(15,15,15,0.75);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+    }
+
+    .back-btn.on-panel:hover { color: #ffffff; }
 
     .hero-title-block {
       position: fixed;
@@ -381,6 +397,24 @@
       margin-bottom: 16px;
     }
 
+    /* ── P1 SPREAD + TEXT OVERLAY ── */
+    .p1-spread-block {
+      position: relative;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+    }
+
+    .p1-spread-block .project-img {
+      margin-top: 6.5em;
+    }
+
+    .p1-text-overlay {
+      position: absolute;
+      top: calc(48px - 6.5em);
+      left: 48px;
+      max-width: calc(50vw - 72px);
+    }
+
     /* ── IMAGE STACK ── */
     .image-stack {
       display: flex;
@@ -423,10 +457,10 @@
       mix-blend-mode: difference;
       z-index: 11;
       pointer-events: none;
-      will-change: top, transform;
-      transform: scaleY(1);
+      will-change: translate, scale;
+      scale: 1 1;
       transform-origin: center;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: scale 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @media (max-width: 640px) {
@@ -458,12 +492,27 @@
       .p2-text-overlay .section-label { color: #aaaaaa; }
       .p2-text-overlay .section-heading { color: #111111; }
       .p2-text-overlay .section-body { color: #444444; }
+
+      /* Same for Part 1: half-screen-wide text over the drawing is unreadable on a phone */
+      .p1-spread-block {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .p1-spread-block .project-img { margin-top: 0; }
+
+      .p1-text-overlay {
+        position: static;
+        order: -1;
+        max-width: 100%;
+        padding: 0 24px 32px;
+      }
     }
   </style>
 </head>
 <body>
 
-<img class="hero-image" src="assets/p2carouselcover.jpeg" alt="Project Two cover">
+<img class="hero-image" src="assets/p2carouselcover.jpeg" alt="Project Two cover" fetchpriority="high">
 
 <div class="hero-overlay" aria-hidden="true"></div>
 
@@ -509,7 +558,7 @@
 
   <div class="project-nav">
     <a href="#hr-p3" class="project-nav-btn project-nav-btn--large" data-scroll-target="hr-p3">
-      <img src="assets/p2-p3.jpg" alt="P3: Fayetteville art hall">
+      <img src="assets/p2-p3.jpg" srcset="assets/sm/p2-p3.jpg 1600w, assets/p2-p3.jpg 3200w" sizes="(max-width: 640px) 100vw, 80vw" width="3200" height="1762" decoding="async" alt="P3: Fayetteville art hall">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Final Work</span>
         <span class="nav-btn-title">Fayetteville art hall</span>
@@ -521,7 +570,7 @@
       </div>
     </a>
     <a href="#hr-p2" class="project-nav-btn" data-scroll-target="hr-p2">
-      <img src="assets/p2-p2.JPG" alt="P2: Roof Transformation">
+      <img src="assets/p2-p2.JPG" srcset="assets/sm/p2-p2.JPG 1600w, assets/p2-p2.JPG 3200w" sizes="(max-width: 640px) 50vw, 40vw" width="3200" height="2133" decoding="async" alt="P2: Roof Transformation">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Part 2</span>
         <span class="nav-btn-title">Roof Transformation</span>
@@ -533,7 +582,7 @@
       </div>
     </a>
     <a href="#hr-p1" class="project-nav-btn project-nav-btn--p1" data-scroll-target="hr-p1">
-      <img src="assets/p2-p1.jpg" alt="P1: Roof Precedent">
+      <img src="assets/p2-p1.jpg" width="2285" height="1224" decoding="async" alt="P1: Roof Precedent">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Part 1</span>
         <span class="nav-btn-title">Roof Precedent</span>
@@ -566,12 +615,13 @@
   </div>
 
   <div class="image-stack">
-    <img src="assets/p2-1.jpg" alt="" class="project-img">
-    <img src="assets/p2-p3-spread-1.jpg" alt="" class="project-img">
-    <img src="assets/p2-7.jpg" alt="" class="project-img">
-    <img src="assets/p2-8.jpg" alt="" class="project-img" style="width: 90%; margin: 0 auto 96px;">
-    <img src="assets/p2-9.jpg" alt="" class="project-img" style="width: 90%; margin: 0 auto;">
-    <img src="assets/p2cover.jpeg" alt="" class="project-img" style="width: 90%; margin: 96px auto 0;">
+    <img src="assets/p2-1.jpg" srcset="assets/sm/p2-1.jpg 1600w, assets/p2-1.jpg 3200w" sizes="100vw" width="3200" height="1600" loading="lazy" decoding="async" alt="" class="project-img">
+    <img src="assets/p2-p3-spread-1.jpg" srcset="assets/sm/p2-p3-spread-1.jpg 1600w, assets/p2-p3-spread-1.jpg 3200w" sizes="100vw" width="3200" height="4974" loading="lazy" decoding="async" alt="" class="project-img">
+    <!-- same picture as the "Final Work" button above (p2-7.jpg is an identical copy), so it's only downloaded once -->
+    <img src="assets/p2-p3.jpg" srcset="assets/sm/p2-p3.jpg 1600w, assets/p2-p3.jpg 3200w" sizes="100vw" width="3200" height="1762" loading="lazy" decoding="async" alt="" class="project-img">
+    <img src="assets/p2-8.jpg" width="2560" height="1440" loading="lazy" decoding="async" alt="" class="project-img" style="width: 90%; margin: 0 auto 96px;">
+    <img src="assets/p2-9.jpg" width="2560" height="1440" loading="lazy" decoding="async" alt="" class="project-img" style="width: 90%; margin: 0 auto;">
+    <img src="assets/p2carouselcover.jpeg" width="1376" height="768" loading="lazy" decoding="async" alt="" class="project-img" style="width: 90%; margin: 96px auto 0;">
   </div>
 
   <div class="panel-inner" style="padding-top: 0; padding-bottom: 0; margin-bottom: -16px; position: relative; z-index: 10;">
@@ -579,8 +629,8 @@
   </div>
 
   <div class="p2-image-block">
-    <img src="assets/p2-p2-1.jpg" alt="" class="project-img">
-  <img src="assets/p2-p2-2jpg.jpg" alt="" class="project-img">
+    <img src="assets/p2-p2-1.jpg" srcset="assets/sm/p2-p2-1.jpg 1600w, assets/p2-p2-1.jpg 3200w" sizes="100vw" width="3200" height="5333" loading="lazy" decoding="async" alt="" class="project-img">
+    <img src="assets/p2-p2-2jpg.jpg" srcset="assets/sm/p2-p2-2jpg.jpg 1600w, assets/p2-p2-2jpg.jpg 3200w" sizes="100vw" width="3200" height="2799" loading="lazy" decoding="async" alt="" class="project-img">
     <div class="p2-text-overlay" id="project-p2">
       <p class="section-label">Part 2</p>
       <h2 class="section-heading">Roof Transformation</h2>
@@ -600,9 +650,9 @@
     <hr class="section-rule" id="hr-p1">
 
     <section class="project-section" id="project-p1">
-      <div style="position: relative; width: 100vw; margin-left: calc(50% - 50vw);">
-        <img src="assets/p2-p1-spread.jpg" alt="P1: Roof Precedent Spread" class="project-img" style="width: 100%; display: block; margin-top: 6.5em;">
-        <div style="position: absolute; top: calc(48px - 6.5em); left: 48px; max-width: calc(50vw - 72px);">
+      <div class="p1-spread-block">
+        <img src="assets/p2-p1-spread.jpg" srcset="assets/sm/p2-p1-spread.jpg 1600w, assets/p2-p1-spread.jpg 3200w" sizes="100vw" width="3200" height="5973" loading="lazy" decoding="async" alt="P1: Roof Precedent Spread" class="project-img">
+        <div class="p1-text-overlay">
           <p class="section-label">Part 1</p>
           <h2 class="section-heading">Roof Precedent</h2>
           <p class="section-body">
@@ -627,36 +677,52 @@
 <div class="scroll-dot" id="scrollDot" aria-hidden="true"></div>
 
 <script>
+  const PROJECT_INDEX = 1; // position in the gallery carousel
   const dot        = document.getElementById('scrollDot');
   const scrollHint = document.querySelector('.scroll-hint');
+  const heroImage  = document.querySelector('.hero-image');
+  const panel      = document.querySelector('.content-panel');
+  const backBtn    = document.querySelector('.back-btn');
   const DOT_SIZE   = 9;
   const MARGIN     = 16;
   let   stopTimer  = null;
+  let   frame      = null;
+  let   panelTop   = 0;
+  let   btnMid     = 0;
+
+  // Layout only changes on resize, so measure once rather than on every scroll event
+  function measure() {
+    panelTop = panel.offsetTop;
+    const r = backBtn.getBoundingClientRect();
+    btnMid = r.top + r.height / 2;
+  }
 
   function updateDot() {
+    frame = null;
     const scrollTop = window.scrollY;
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     const progress  = maxScroll > 0 ? scrollTop / maxScroll : 0;
     const range     = window.innerHeight - MARGIN * 2 - DOT_SIZE;
-    dot.style.top   = (MARGIN + progress * range) + 'px';
-
-    dot.style.transform = 'scaleY(2.4)';
-
-    clearTimeout(stopTimer);
-    stopTimer = setTimeout(() => {
-      dot.style.transform = 'scaleY(1)';
-    }, 120);
+    dot.style.translate = `0 ${progress * range}px`;
 
     scrollHint.style.opacity = Math.max(0, 1 - scrollTop / 80);
 
     // Hide hero image when scrolled past
-    const heroImage = document.querySelector('.hero-image');
-    if (heroImage) {
-      heroImage.style.opacity = Math.max(0, 1 - scrollTop / (window.innerHeight * 0.9));
-    }
+    heroImage.style.opacity = Math.max(0, 1 - scrollTop / (window.innerHeight * 0.9));
+
+    // Gallery button stays readable once the white panel slides under it
+    backBtn.classList.toggle('on-panel', scrollTop + btnMid > panelTop);
   }
 
-  window.addEventListener('scroll', updateDot, { passive: true });
+  window.addEventListener('scroll', () => {
+    dot.style.scale = '1 2.4';
+    clearTimeout(stopTimer);
+    stopTimer = setTimeout(() => { dot.style.scale = '1 1'; }, 120);
+    if (!frame) frame = requestAnimationFrame(updateDot);
+  }, { passive: true });
+
+  window.addEventListener('resize', () => { measure(); updateDot(); });
+  measure();
   updateDot();
 
   document.querySelectorAll('[data-scroll-target]').forEach(function(btn) {
@@ -670,16 +736,46 @@
     });
   });
 
-  document.querySelector('.back-btn').addEventListener('click', function(e) {
+  // "Top" goes back up to the section buttons, not all the way to the cover image
+  document.querySelectorAll('.back-to-nav').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.scrollTo({ top: panelTop, behavior: 'smooth' });
+    });
+  });
+
+  // Opened from the gallery: going "back" keeps the browser's Back/Forward history in order
+  function cameFromGallery() {
+    try {
+      const ref = new URL(document.referrer);
+      return history.length > 1 && ref.origin === location.origin &&
+        /(^|\/)((portfolio|index)(\.html)?)?$/.test(ref.pathname);
+    } catch (e) { return false; }
+  }
+
+  backBtn.addEventListener('click', function(e) {
     e.preventDefault();
     const dest = this.getAttribute('href');
-    sessionStorage.setItem('returnFromProject', JSON.stringify({ index: 1 }));
+    sessionStorage.setItem('returnFromProject', JSON.stringify({ index: PROJECT_INDEX }));
     document.documentElement.style.background = '#ffffff';
     document.body.style.transform  = 'translateY(0px)';
     document.body.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 1, 1)';
     void document.body.offsetHeight; // force reflow so transition registers before transform changes
     document.body.style.transform  = 'translateY(100vh)';
-    setTimeout(() => { window.location.href = dest; }, 520);
+    setTimeout(() => {
+      if (cameFromGallery()) history.back();
+      else window.location.href = dest;
+    }, 520);
+  });
+
+  // Returning with the browser's Forward button: undo the slide-away
+  window.addEventListener('pageshow', function(e) {
+    if (!e.persisted) return;
+    document.body.style.transition = '';
+    document.body.style.transform  = '';
+    document.documentElement.style.background = '';
+    measure();
+    updateDot();
   });
 </script>
 
