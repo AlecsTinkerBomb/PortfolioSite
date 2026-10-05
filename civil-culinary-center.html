@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Civil Culinary Center — AW</title>
   <link rel="icon" href="assets/logo.png" type="image/png">
+  <script>document.documentElement.classList.add('js');</script>
   <link rel="preconnect" href="https://api.fontshare.com">
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
@@ -387,6 +388,24 @@
       display: block;
     }
 
+    /* ── IMAGE PLACEHOLDERS ── each image shows a tiny blurred preview (inline background)
+       until the real one has loaded, then sharpens into it. Only when JS runs (.js on <html>). */
+    .js img.ph {
+      background-size: cover;
+      background-position: center;
+      filter: blur(12px);
+      clip-path: inset(0);
+      transition: filter 0.6s ease;
+    }
+
+    .js img.ph-wait { object-position: -99999px -99999px !important; }
+    .js img.ph-in   { transition: none; }
+    .js img.ph-done { filter: blur(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .js img.ph { transition: none; }
+    }
+
     html {
       scrollbar-width: none;
       scroll-behavior: smooth;
@@ -473,7 +492,7 @@
 
   <div class="project-nav">
     <a href="#hr-p3" class="project-nav-btn project-nav-btn--large" data-scroll-target="hr-p3">
-      <img src="assets/p3-p3-cover.jpg" width="2560" height="1445" decoding="async" alt="Section 3">
+      <img style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAOABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzGUavbN5d1LcW9wRlYJVdZGHYgEdK2fho8zfEbT3J33QZ9iyHAZtjAgnnHGex6Vky32mwI50+O9lmx8tzPNsZc9tq5BH4961vhYzP8TdJZjli8hJ9f3b0AesadFPD8cLxFWVbX+zAcDd5e7KfhnrRXcQDGoXPP8Ef/s1FAH//2Q==');" class="ph ph-wait" src="assets/p3-p3-cover.jpg" width="2560" height="1445" decoding="async" alt="Section 3">
       <div class="nav-btn-label">
       </div>
       <div class="nav-btn-arrow">
@@ -483,7 +502,7 @@
       </div>
     </a>
     <a href="#hr-p2" class="project-nav-btn project-nav-btn--p2" data-scroll-target="hr-p2">
-      <img src="assets/p3-p2-cover.jpg" srcset="assets/sm/p3-p2-cover.jpg 1600w, assets/p3-p2-cover.jpg 3200w" sizes="(max-width: 640px) 50vw, 40vw" width="3200" height="1712" decoding="async" alt="Section 2">
+      <img style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAANABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD1TX9UfR9Jku44hNIGVVjLBdxZgBz+NcjD8S5prwwfYESRGG6JX8wlSOxH68cV2ep6RZazBHDqMAnijkEiqxIG4dDweetUZfB+iTMGaxVWDbgUdkOcY6gjt2qXe+hStbUm0bxHp+uKRay4nVdz28nyyIM4yV9M96Ks6fpNhpUZTT7OC3B6+WgBb6nqfxoqiT//2Q==');" class="ph ph-wait" src="assets/p3-p2-cover.jpg" srcset="assets/sm/p3-p2-cover.jpg 1600w, assets/p3-p2-cover.jpg 3200w" sizes="(max-width: 640px) 50vw, 40vw" width="3200" height="1712" decoding="async" alt="Section 2">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Part 2</span>
         <span class="nav-btn-title">Art Corridor Site Analysis</span>
@@ -495,7 +514,7 @@
       </div>
     </a>
     <a href="#hr-p1" class="project-nav-btn project-nav-btn--p1" data-scroll-target="hr-p1">
-      <img src="assets/p3-p1-cover.jpg" width="1167" height="1200" decoding="async" alt="Section 1">
+      <img style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAZABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDq50WO0M8jBUjDOT7AZP8AKoWuLRJLTM6Kl1lo5HYKmAu7qfUVauoVms2hkBKSo6HHoeDXM61bRNN4dtZEEkMV+sO1gCGUKQM568Cs7lHSmMKykMGB5BFFOYopVSQm0cLjgAUUwKdlfxy2aCeYCZS2d314rL1hkfUdHaPMiw3/AJsrIM7V2nk1A/f/AD2px+5+NQmVY0PEN276Lepp8rNcOoEYQ4JO4dPworO7fjRT5gsf/9k=');" class="ph ph-wait" src="assets/p3-p1-cover.jpg" width="1167" height="1200" decoding="async" alt="Section 1">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Part 1</span>
         <span class="nav-btn-title">Urban Vertical Precedent Study</span>
@@ -524,7 +543,7 @@
         Top
       </a>
     </section>
-    <img src="assets/p3-p3-spread.jpg" srcset="assets/sm/p3-p3-spread.jpg 1600w, assets/p3-p3-spread.jpg 3200w" sizes="100vw" width="3200" height="8559" loading="lazy" decoding="async" alt="" class="project-img" style="width: 100vw; margin-left: calc(50% - 50vw); display: block;">
+    <img src="assets/p3-p3-spread.jpg" srcset="assets/sm/p3-p3-spread.jpg 1600w, assets/p3-p3-spread.jpg 3200w" sizes="100vw" width="3200" height="8559" loading="lazy" decoding="async" alt="" class="project-img ph ph-wait" style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCABAABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2QnHFRXJkMIEMgjcuACRkHnkflmpScGmvKkab5CAo70IHqZkd5O1xsNyn/H60eNuMKFzt+7175/U0VoxxxKfkjRSWLnAAyT3+tFNu5KTW5VuHg+0tkF3Xhv3hAHA7fjVmHZJbhtoCnnGc1Fc26GQyPLIu4YwoHH6VLEEa3whJUetIojW4zeLH5IyR94N04zRUkMSB943E9MmigB8sayLtcZH1pERIo9qcL9c1g6Z4sTUvE97or2U0L24JDnkMASM8dAeMV0JQEAc4oARCCTjt1opVXb0ooAoa3mHS7qWE+XL5TfvF4bhTjn2rze21bU4PF8Nut9fXAK5EdxIQB8pPXp+len6jZ/b7Ce23mMyIyhgM4yMZ/Wuah8J3VvfRPuidAGQuGKsqkYA/CgDpNOuPtNqCSSy/KSe5xRUKC4s3jhjQMhPJwTn8faigD//Z'); width: 100vw; margin-left: calc(50% - 50vw); display: block;">
   </div>
 
   <div class="panel-inner" style="padding-top: 0; padding-bottom: 0; margin-bottom: -16px; position: relative; z-index: 10;">
@@ -545,7 +564,7 @@
         Top
       </a>
     </section>
-    <img src="assets/p3-p2-spread.jpg" srcset="assets/sm/p3-p2-spread.jpg 1600w, assets/p3-p2-spread.jpg 3200w" sizes="100vw" width="3200" height="4974" loading="lazy" decoding="async" alt="" class="project-img" style="width: 100vw; margin-left: calc(50% - 50vw); display: block;">
+    <img src="assets/p3-p2-spread.jpg" srcset="assets/sm/p3-p2-spread.jpg 1600w, assets/p3-p2-spread.jpg 3200w" sizes="100vw" width="3200" height="4974" loading="lazy" decoding="async" alt="" class="project-img ph ph-wait" style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAlABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2Tmo5WIxgn3xQwmLEoygdgRSsHbjA6frQBEsjmRQX470UqQMGGQAAc8GigBYoAjl95JNOLqkgV51BbopwM1m6/rY0KK3cWclwJpPLHl4yp+nU9+npXL2njS+ur+WW8SytrSFGZ0Y5MeD/ABk4wfpSclexSi2rnd+WAfvt1z1oqhoOo3Oq6eLq6s/syucxAk5dOzFSMrn0PNFMks6lplrq1oba8jLxk5GGKlT6gjkHmud0/wCHtlZahHLNcyXVrBzBbSouFb1ZgBvx2B+pyaKKVh3Z1tFFFMR//9k='); width: 100vw; margin-left: calc(50% - 50vw); display: block;">
   </div>
 
   <div class="panel-inner" style="padding-top: 0; padding-bottom: 0; margin-bottom: -16px; position: relative; z-index: 10;">
@@ -566,7 +585,7 @@
         Top
       </a>
     </section>
-    <img src="assets/p3-p1-spread.jpg" srcset="assets/sm/p3-p1-spread.jpg 1600w, assets/p3-p1-spread.jpg 3200w" sizes="100vw" width="3200" height="5973" loading="lazy" decoding="async" alt="" class="project-img" style="width: 100vw; margin-left: calc(50% - 50vw); display: block;">
+    <img src="assets/p3-p1-spread.jpg" srcset="assets/sm/p3-p1-spread.jpg 1600w, assets/p3-p1-spread.jpg 3200w" sizes="100vw" width="3200" height="5973" loading="lazy" decoding="async" alt="" class="project-img ph ph-wait" style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAtABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2Mvgnijdlc++KbI6R5Zs8DJxSkZT5fXvQAqOGopEG0YOOuaKAK1yyStJEskXmbcEFxkZ9RXOeKb7XbfV7O10i+s7SJomaVp0DsTnjaOp4zWJqNnoeq6/qTRs6TCRmlZoMgOhAOGz/AHhXL+J5hY6foUOnXV3FA9vMkpKmJ5P3mGyD+P1FJSG4taGhpPxD8STa9ZWd1dW7K94sEoWBRxv2nBoquNK07RdU0WG1guDM15bkSsu5ADIMgt6+lFMR2lxDp9rrc2FkWdpJSu1sfM2SSOPb9KpappGjX2o2lhfNO1yryRRyBwC+5w7HbjjB71uXuivcaibj7SqlHfA8vP3sj17UkvhaKTXxqLTfvlZNpCEEAHJGQe9TvuMxDNpk2oafb3EdyUN3E0R3Ko8xWymcD2ziirT+Czc6lYTTX+RaXa3CqsON2CMAnd7UU1fqDP/Z'); width: 100vw; margin-left: calc(50% - 50vw); display: block;">
   </div>
 
   <div style="width: 100vw; margin-left: calc(50% - 50vw); background: #ffffff; height: 48px;"></div>
@@ -674,6 +693,48 @@
     document.documentElement.style.background = '';
     measure();
     updateDot();
+  });
+
+  // Images: each blurred placeholder sharpens into its photo once that has loaded…
+  function reveal(img) {
+    const show = () => {
+      img.classList.add('ph-in');
+      img.classList.remove('ph-wait');
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img.classList.remove('ph-in');
+        img.classList.add('ph-done');
+        setTimeout(() => img.classList.remove('ph', 'ph-done'), 700);
+      }));
+    };
+    if (img.decode) img.decode().then(show, show);
+    else show();
+  }
+
+  document.querySelectorAll('img.ph').forEach(function(img) {
+    if (img.complete) {
+      img.classList.remove('ph', 'ph-wait'); // already cached: show it straight away
+    } else {
+      img.addEventListener('load', () => reveal(img), { once: true });
+      img.addEventListener('error', () => img.classList.remove('ph', 'ph-wait'), { once: true });
+    }
+  });
+
+  // …and once the top of the page is in, the rest load in page order (two at a time),
+  // instead of waiting until you've nearly scrolled to them
+  window.addEventListener('load', function() {
+    const queue = [...document.querySelectorAll('img[loading="lazy"]')].filter(img => !img.complete);
+    let active = 0;
+    (function pump() {
+      while (active < 2 && queue.length) {
+        const img = queue.shift();
+        if (img.complete) continue;
+        active++;
+        const next = () => { active--; pump(); };
+        img.addEventListener('load', next, { once: true });
+        img.addEventListener('error', next, { once: true });
+        img.loading = 'eager';
+      }
+    })();
   });
 </script>
 

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monte Ne Artists Retreat — AW</title>
   <link rel="icon" href="assets/logo.png" type="image/png">
+  <script>document.documentElement.classList.add('js');</script>
   <link rel="preconnect" href="https://api.fontshare.com">
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
@@ -363,6 +364,24 @@
       display: block;
     }
 
+    /* ── IMAGE PLACEHOLDERS ── each image shows a tiny blurred preview (inline background)
+       until the real one has loaded, then sharpens into it. Only when JS runs (.js on <html>). */
+    .js img.ph {
+      background-size: cover;
+      background-position: center;
+      filter: blur(12px);
+      clip-path: inset(0);
+      transition: filter 0.6s ease;
+    }
+
+    .js img.ph-wait { object-position: -99999px -99999px !important; }
+    .js img.ph-in   { transition: none; }
+    .js img.ph-done { filter: blur(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .js img.ph { transition: none; }
+    }
+
     html {
       scrollbar-width: none;
       scroll-behavior: smooth;
@@ -449,7 +468,7 @@
 
   <div class="project-nav">
     <a href="#hr-p3" class="project-nav-btn project-nav-btn--large" data-scroll-target="hr-p3">
-      <img src="assets/p1-p3-cover.jpg" srcset="assets/sm/p1-p3-cover.jpg 1600w, assets/p1-p3-cover.jpg 3200w" sizes="(max-width: 640px) 100vw, 80vw" width="3200" height="5973" decoding="async" alt="P3: A Place to Dwell" style="transform: none; object-fit: cover; object-position: center center;">
+      <img class="ph ph-wait" src="assets/p1-p3-cover.jpg" srcset="assets/sm/p1-p3-cover.jpg 1600w, assets/p1-p3-cover.jpg 3200w" sizes="(max-width: 640px) 100vw, 80vw" width="3200" height="5973" decoding="async" alt="P3: A Place to Dwell" style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAtABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD1eAXMl9I5kPkq5G0nrVoPtkKseGPyn+lURqK288sTRn75+YH3ptxPcGaQJjYig7duQ9AGkz4ZVAyx/QetFRojRvuGXDdcnlf8RRQBk3drMbqVhE5DMcEDNNxeiPZtm2+m01eQGK6kMZBZpMsQQTj0x9auCaPJHmJkHBG4dfSgCjZPel1Ehbbnnenb60VPbXe/K3GIpd2NjEA+2PWigDyu+e7h8Z6jc22j6vciO7Zm2PGsbAN2zzj3pt1cXh8zXpdL1RZBqSsbFYY9zDG8HeByo27c+9ds3gx21K9u21OQi6lZxH5fEYPb73NXofDu3T2tpLx2HmhwyrtxxjHWgDy/SJ3vvGtpcy6Tr0bTX6zfvQpjiBfODx90Z60V6pb+H0guIpftMrmNgQGJ7fjRQB//2Q=='); transform: none; object-fit: cover; object-position: center center;">
 
       <div class="nav-btn-label" style="background: linear-gradient(to top, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.08) 50%, transparent 75%);">
         <span class="nav-btn-eyebrow">Part 3</span>
@@ -462,7 +481,7 @@
       </div>
     </a>
     <a href="#hr-p2" class="project-nav-btn" data-scroll-target="hr-p2">
-      <img src="assets/p1-p2-cover.jpg" srcset="assets/sm/p1-p2-cover.jpg 1600w, assets/p1-p2-cover.jpg 3200w" sizes="(max-width: 640px) 50vw, 40vw" width="3200" height="2400" decoding="async" alt="P2: Tectonic Assemblies">
+      <img style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAASABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDn5fGGkz2To9pNFKvAQ4cHHQhuCprobKO1s7IyCXzLidBNskOWAx2P0zz7CuVu/CkWo3sl1HOIVmYsVwMBu/P1rrrZ7Y6escqAXNvFhW/vAccN/SvM5YJe6ejzyb94xYrl53QIcyZ+U9x+NFZbXq2oV1k2sO4OCKK6vZN7GftF1PQPFJMV9brGdirHkBeAOK5G/mllSbzJHfC/xMTRRXHT3RUjI8RW0EWnWLxwxozR5ZlUAn60UUV3x2OZ7n//2Q==');" class="ph ph-wait" src="assets/p1-p2-cover.jpg" srcset="assets/sm/p1-p2-cover.jpg 1600w, assets/p1-p2-cover.jpg 3200w" sizes="(max-width: 640px) 50vw, 40vw" width="3200" height="2400" decoding="async" alt="P2: Tectonic Assemblies">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Part 2</span>
         <span class="nav-btn-title">Tectonic Assemblies</span>
@@ -474,7 +493,7 @@
       </div>
     </a>
     <a href="#hr-p1" class="project-nav-btn project-nav-btn--p1" data-scroll-target="hr-p1">
-      <img src="assets/p1-p1-cover.jpg" width="1920" height="1173" decoding="async" alt="P1: Modular Mass">
+      <img style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAPABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDsLl0OnXFx5IEkCvvjJ6FRnGfQjBz6GuZ0Nk1CxnMaeWgfKx9QmewPf6V05mUWtlfEAxXNvEsykf3lG0479cH2Nc1Laalp3iU5fbp0swZRGQqYIxjaO/4V4llqj1IvZnnusaasmszpewi3cn/lkflb/a59aK7LxTp63SlhhZUyUb+h9qK7KdZuO5hOkr7H/9k=');" class="ph ph-wait" src="assets/p1-p1-cover.jpg" width="1920" height="1173" decoding="async" alt="P1: Modular Mass">
       <div class="nav-btn-label">
         <span class="nav-btn-eyebrow">Part 1</span>
         <span class="nav-btn-title">Modular Mass</span>
@@ -496,7 +515,7 @@
       <p class="section-body">
         This project situated the dwelling and frame system within an artist's retreat on the Fayetteville site of Monte Ne. Program designation and site circulation were the critical focus.
       </p>
-      <img src="assets/p1-p3-spread.jpg" srcset="assets/sm/p1-p3-spread.jpg 1600w, assets/p1-p3-spread.jpg 3200w" sizes="100vw" width="3200" height="5973" loading="lazy" decoding="async" alt="" class="project-img" style="width: 100vw; margin-left: calc(50% - 50vw); display: block;">
+      <img src="assets/p1-p3-spread.jpg" srcset="assets/sm/p1-p3-spread.jpg 1600w, assets/p1-p3-spread.jpg 3200w" sizes="100vw" width="3200" height="5973" loading="lazy" decoding="async" alt="" class="project-img ph ph-wait" style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAtABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD1eAXMl9I5kPkq5G0nrVoPtkKseGPyn+lURqK288sTRn75+YH3ptxPcGaQJjYig7duQ9AGkz4ZVAyx/QetFRojRvuGXDdcnlf8RRQBk3drMbqVhE5DMcEDNNxeiPZtm2+m01eQGK6kMZBZpMsQQTj0x9auCaPJHmJkHBG4dfSgCjZPel1Ehbbnnenb60VPbXe/K3GIpd2NjEA+2PWigDyu+e7h8Z6jc22j6vciO7Zm2PGsbAN2zzj3pt1cXh8zXpdL1RZBqSsbFYY9zDG8HeByo27c+9ds3gx21K9u21OQi6lZxH5fEYPb73NXofDu3T2tpLx2HmhwyrtxxjHWgDy/SJ3vvGtpcy6Tr0bTX6zfvQpjiBfODx90Z60V6pb+H0guIpftMrmNgQGJ7fjRQB//2Q=='); width: 100vw; margin-left: calc(50% - 50vw); display: block;">
       <a href="#" class="back-to-nav" aria-label="Back to top">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M6 10V2M2 6l4-4 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -517,7 +536,7 @@
       <p class="section-body">
         This project developed a truss frame system that shaded and defined the exterior space of the dwelling. The project's goal was to clearly articulate the boundary between interior and exterior.
       </p>
-      <img src="assets/p1-p2-spread.jpg" srcset="assets/sm/p1-p2-spread.jpg 1600w, assets/p1-p2-spread.jpg 3200w" sizes="100vw" width="3200" height="5547" loading="lazy" decoding="async" alt="" class="project-img" style="width: 100vw; margin-left: calc(50% - 50vw); display: block;">
+      <img src="assets/p1-p2-spread.jpg" srcset="assets/sm/p1-p2-spread.jpg 1600w, assets/p1-p2-spread.jpg 3200w" sizes="100vw" width="3200" height="5547" loading="lazy" decoding="async" alt="" class="project-img ph ph-wait" style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAqABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCjYa7fnW9SW9uLkRpJILYmZwQQ5GV5we3XjFdFdarfRyRE60xllnCfZwrKQC+OuMdMV6W0aMfmRTjplQapa7L9k0qW4i2JJGVIcxhscjtUy0VxpXdjNsI5mjh8y5uGuBMUf5/lwCegz7UVi2Xi2/l8T6bYvJDLDcSFZCYNrD5SRg/UUUQkpK6BxcdGd4ZUBIJP5VW1O5gs7JpbqNpIQRuAAOOf8aS5vre2vIrd0cyTttXHTPWotZW1bTXm1COYwxYLIjHJ5A6A803sJbkdpNp12YpoLReXwj7VBBHpzmisTTRo19qcJt7O68zO5JROSVx/eG7K9+tFKOw5bmZJ8Qpnubxv7Li/0S5+zhpUIbO4jIPp9Krar8Qp5Bc2NzpkZRJFRizuivk5GCOSO/4V02p6VYS3DeZY2z5fJ3RKeevpUmoaVYToBNY20gH96JT3HtWClLubtR7HOaTq0UOrxfY7CKIMQxPmyBuTt5B69e9FdBDptkNRicWdvvVjhvKXI5+lFVFvuZu3Y//Z'); width: 100vw; margin-left: calc(50% - 50vw); display: block;">
       <a href="#" class="back-to-nav" aria-label="Back to top">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M6 10V2M2 6l4-4 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -538,7 +557,7 @@
       <p class="section-body">
         This project explored massing through the aggregation of cubes, investigating light interaction and the relationship between solid and void. The end result was a small single-person dwelling.
       </p>
-      <img src="assets/p1-p1-spread.jpg" srcset="assets/sm/p1-p1-spread.jpg 1600w, assets/p1-p1-spread.jpg 3200w" sizes="100vw" width="3200" height="3309" loading="lazy" decoding="async" alt="" class="project-img" style="width: 100vw; margin-left: calc(50% - 50vw); display: block;">
+      <img src="assets/p1-p1-spread.jpg" srcset="assets/sm/p1-p1-spread.jpg 1600w, assets/p1-p1-spread.jpg 3200w" sizes="100vw" width="3200" height="3309" loading="lazy" decoding="async" alt="" class="project-img ph ph-wait" style="background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAZABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwCe+vfECeMJlSbVfswviAFMmzZ5nQdsY/CtrxBNqscjiO5v40d08tot/UdVIHQEc5/CuvZTpc1xd3t3JJC8g8pOTsz/AA/TNX4Z/tESyKrqD2PUVlOHO1raxcZcq2ueU6Xd+IpPFFuklxqf2YXq79/mBdu/p9KK9aGfU9aK1MwIDZVgCCMEHvTWYRqBtGOgA4xUlIaYCI29c4xRSjpRQB//2Q=='); width: 100vw; margin-left: calc(50% - 50vw); display: block;">
       <a href="#" class="back-to-nav" aria-label="Back to top">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M6 10V2M2 6l4-4 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -653,6 +672,48 @@
     document.documentElement.style.background = '';
     measure();
     updateDot();
+  });
+
+  // Images: each blurred placeholder sharpens into its photo once that has loaded…
+  function reveal(img) {
+    const show = () => {
+      img.classList.add('ph-in');
+      img.classList.remove('ph-wait');
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img.classList.remove('ph-in');
+        img.classList.add('ph-done');
+        setTimeout(() => img.classList.remove('ph', 'ph-done'), 700);
+      }));
+    };
+    if (img.decode) img.decode().then(show, show);
+    else show();
+  }
+
+  document.querySelectorAll('img.ph').forEach(function(img) {
+    if (img.complete) {
+      img.classList.remove('ph', 'ph-wait'); // already cached: show it straight away
+    } else {
+      img.addEventListener('load', () => reveal(img), { once: true });
+      img.addEventListener('error', () => img.classList.remove('ph', 'ph-wait'), { once: true });
+    }
+  });
+
+  // …and once the top of the page is in, the rest load in page order (two at a time),
+  // instead of waiting until you've nearly scrolled to them
+  window.addEventListener('load', function() {
+    const queue = [...document.querySelectorAll('img[loading="lazy"]')].filter(img => !img.complete);
+    let active = 0;
+    (function pump() {
+      while (active < 2 && queue.length) {
+        const img = queue.shift();
+        if (img.complete) continue;
+        active++;
+        const next = () => { active--; pump(); };
+        img.addEventListener('load', next, { once: true });
+        img.addEventListener('error', next, { once: true });
+        img.loading = 'eager';
+      }
+    })();
   });
 </script>
 

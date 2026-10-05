@@ -10,6 +10,11 @@
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <!-- Everything the intro needs, fetched first: the skyline and the three gallery covers -->
+  <link rel="preload" as="image" href="assets/cityskyline2.png" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/sm/p1carouselcover.jpg" imagesrcset="assets/sm/p1carouselcover.jpg 1600w, assets/p1carouselcover.jpg 3200w" imagesizes="(max-width: 639px) 225px, 480px">
+  <link rel="preload" as="image" href="assets/p2carouselcover.jpeg">
+  <link rel="preload" as="image" href="assets/sm/p3carouselcover.jpg" imagesrcset="assets/sm/p3carouselcover.jpg 1600w, assets/p3carouselcover.jpg 3200w" imagesizes="(max-width: 639px) 225px, 480px">
   <link rel="prefetch" href="monte-ne-artists-retreat.html">
   <link rel="prefetch" href="fayetteville-art-hall.html">
   <link rel="prefetch" href="civil-culinary-center.html">
@@ -879,7 +884,9 @@ function buildCarousel() {
     card.setAttribute('aria-label', `View ${proj.name}`);
 
     const img = document.createElement('img');
-    img.crossOrigin = 'anonymous';
+    // Only the stand-in images come from another site (needed to read their colour for the glow);
+    // our own covers stay plain requests so they share the cache with the preload and project pages.
+    if (!proj.cover) img.crossOrigin = 'anonymous';
     img.alt      = proj.name;
     img.decoding = 'async';
     if (proj.coverSm) {
@@ -1282,7 +1289,7 @@ function applyIntroState(p) {
   }
 }
 
-function playIntro() {
+function playIntro(coversReady = Promise.resolve()) {
   try { sessionStorage.setItem('introSeen', '1'); } catch (e) {}
   view = 'entry';
   isTransitioning = true;
@@ -1298,7 +1305,9 @@ function playIntro() {
       { clipPath: 'inset(0% 0% 0% 0%)', duration: INTRO.build, ease: `steps(${INTRO.buildSteps})` }, 0)
     .to(scrollTrack, { y: -pan, duration: INTRO.pan, ease: 'power1.inOut' }, INTRO.panStart)
     .to(prog, { p: 1, duration: INTRO.transition, ease: 'power2.inOut',
-      onUpdate: () => applyIntroState(prog.p) }, INTRO.handoff);
+      onUpdate: () => applyIntroState(prog.p) }, INTRO.handoff)
+    // the gallery doesn't rise until its covers are loaded (no pause at all if they already are)
+    .addPause(INTRO.handoff, () => coversReady.then(() => introTimeline && introTimeline.resume()));
   launchFlyers();
 }
 
@@ -1680,9 +1689,13 @@ document.getElementById('projectBack').addEventListener('click', closeProject);
 
   applyIntroState(0);
   document.documentElement.style.opacity = '';
-  // Start once the skyline image is ready, so the build doesn't run on a blank image
-  const ready = skylineEl.decode ? skylineEl.decode().catch(() => {}) : Promise.resolve();
-  Promise.race([ready, new Promise(r => setTimeout(r, 1200))]).then(playIntro);
+  // Hold on the dark screen until the skyline has loaded, so the build never runs on a
+  // half-loaded image. The gallery covers keep downloading during the build; the gallery
+  // only rises once they're in. (Each wait gives up after a few seconds on a very slow connection.)
+  const decoded = img => img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+  const within  = (promise, ms) => Promise.race([promise, new Promise(r => setTimeout(r, ms))]);
+  const coversReady = within(Promise.all(parts.map(pt => decoded(pt.img))), 8000);
+  within(decoded(skylineEl), 6000).then(() => playIntro(coversReady));
 })();
 
 // Leaving for a project: hide the page so a Back-button restore never shows the expanded cover…

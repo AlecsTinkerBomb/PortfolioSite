@@ -11,7 +11,10 @@
   - Only images that are new or changed since the last run are processed (-Force redoes all).
   - Colors are converted to sRGB (handles CMYK print exports and iPhone Display P3 photos).
   - PNGs are flattened onto white and saved as .jpg.
-  - /originals and /tools are not published (see .wranglerignore).
+  - Images narrower than 1600px don't get a separate phone copy.
+  - Afterwards, every image on the project pages gets a tiny blurred placeholder written
+    into the page (see "Placeholders" at the bottom), so run this after adding images to a page.
+  - /originals and /tools are not published (see .assetsignore).
 #>
 param(
   [int]$Large = 3200,
@@ -135,6 +138,39 @@ public static class WebImage {
     } finally { reduced.Dispose(); }
     return outW + "x" + outH;
   }
+
+  // Width the image is shown at (accounts for EXIF rotation).
+  public static int DisplayWidth(string src) {
+    var frame = BitmapDecoder.Create(new Uri(Path.GetFullPath(src)), BitmapCreateOptions.DelayCreation, BitmapCacheOption.None).Frames[0];
+    int orient = 1;
+    try {
+      var md = frame.Metadata as BitmapMetadata;
+      if (md != null && md.ContainsQuery("/app1/ifd/{ushort=274}")) orient = Convert.ToInt32(md.GetQuery("/app1/ifd/{ushort=274}"));
+    } catch { }
+    return orient >= 5 ? frame.PixelHeight : frame.PixelWidth;
+  }
+
+  // A tiny JPEG of the image as a data: URI, used as the blurred placeholder on the project pages.
+  public static string Placeholder(string src, int width, long quality) {
+    using (var img = new SD.Bitmap(src)) {
+      int h = Math.Max(1, (int)Math.Round((double)img.Height * width / img.Width));
+      using (var tiny = new SD.Bitmap(width, h, SDI.PixelFormat.Format24bppRgb))
+      using (var g = SD.Graphics.FromImage(tiny))
+      using (var attr = new SDI.ImageAttributes())
+      using (var ms = new MemoryStream()) {
+        g.Clear(SD.Color.White);
+        g.InterpolationMode = SD2.InterpolationMode.HighQualityBicubic;
+        g.PixelOffsetMode = SD2.PixelOffsetMode.HighQuality;
+        attr.SetWrapMode(SD2.WrapMode.TileFlipXY);
+        g.DrawImage(img, new SD.Rectangle(0, 0, width, h), 0, 0, img.Width, img.Height, SD.GraphicsUnit.Pixel, attr);
+        var jpeg = Array.Find(SDI.ImageCodecInfo.GetImageEncoders(), c => c.FormatID == SDI.ImageFormat.Jpeg.Guid);
+        var ps = new SDI.EncoderParameters(1);
+        ps.Param[0] = new SDI.EncoderParameter(SDI.Encoder.Quality, quality);
+        tiny.Save(ms, jpeg, ps);
+        return "data:image/jpeg;base64," + Convert.ToBase64String(ms.ToArray());
+      }
+    }
+  }
 }
 '@
 }
@@ -144,11 +180,52 @@ foreach ($f in $files) {
   $name = if ($f.Extension -ieq '.png') { [IO.Path]::ChangeExtension($f.Name, '.jpg') } else { $f.Name }
   $cap = if ($MaxWidth.ContainsKey($f.Name)) { $MaxWidth[$f.Name] } else { $Large }
   $targets = @(@{ Path = Join-Path $Dest $name; Width = $cap })
-  if ($cap -gt $Small) { $targets += @{ Path = Join-Path (Join-Path $Dest 'sm') $name; Width = $Small } }
+  if ($cap -gt $Small -and [WebImage]::DisplayWidth($f.FullName) -gt $Small) {
+    $targets += @{ Path = Join-Path (Join-Path $Dest 'sm') $name; Width = $Small }
+  }
 
   foreach ($t in $targets) {
     if (-not $Force -and (Test-Path $t.Path) -and (Get-Item $t.Path).LastWriteTime -gt $f.LastWriteTime) { continue }
     $dims = [WebImage]::Write($f.FullName, $t.Path, $t.Width, $Quality)
     '{0,-28} -> {1,-34} {2,11}  {3,6:N2} MB' -f $f.Name, ($t.Path.Substring($Dest.Length).TrimStart('\')), $dims, ((Get-Item $t.Path).Length / 1MB)
+  }
+}
+
+# ── Placeholders ─────────────────────────────────────────────────────────────
+# Every image on the project pages (not the cover at the top) gets a tiny blurred preview
+# built into the page: class "ph ph-wait" plus an inline background. The page shows it
+# until the real image has loaded, so you never scroll into empty space. Re-running this
+# refreshes them, and picks up any images you've added to a page.
+$placeholders = @{}
+$pages = Get-ChildItem $root -Filter *.html | Where-Object { $_.Name -notin 'index.html', 'portfolio.html' }
+foreach ($page in $pages) {
+  $html = [IO.File]::ReadAllText($page.FullName)
+  $updated = [regex]::Replace($html, '<img\b[^>]*>', [Text.RegularExpressions.MatchEvaluator] {
+    param($m)
+    $tag = $m.Value
+    if ($tag -match '\bclass="[^"]*\bhero-image\b') { return $tag }
+    if ($tag -notmatch '\ssrc="(assets/[^"]+)"') { return $tag }
+    $file = Join-Path $root $Matches[1]
+    if (-not (Test-Path $file)) { return $tag }
+    if (-not $placeholders.ContainsKey($file)) { $placeholders[$file] = [WebImage]::Placeholder($file, 24, 70) }
+    $bg = "background-image: url('$($placeholders[$file])');"
+
+    if ($tag -match '\sclass="([^"]*)"') {
+      $classes = @($Matches[1] -split '\s+' | Where-Object { $_ -and $_ -ne 'ph' -and $_ -ne 'ph-wait' }) + 'ph', 'ph-wait'
+      $tag = $tag -replace '\sclass="[^"]*"', (' class="' + ($classes -join ' ') + '"')
+    } else {
+      $tag = $tag -replace '^<img\b', '<img class="ph ph-wait"'
+    }
+    if ($tag -match '\sstyle="([^"]*)"') {
+      $rest = ($Matches[1] -replace "background-image: url\('data:[^']*'\);\s*", '').Trim()
+      $tag = $tag -replace '\sstyle="[^"]*"', (' style="' + $bg + $(if ($rest) { ' ' + $rest } else { '' }) + '"')
+    } else {
+      $tag = $tag -replace '^<img\b', ('<img style="' + $bg + '"')
+    }
+    return $tag
+  })
+  if ($updated -ne $html) {
+    [IO.File]::WriteAllText($page.FullName, $updated, (New-Object Text.UTF8Encoding $false))
+    "placeholders updated in $($page.Name)"
   }
 }
